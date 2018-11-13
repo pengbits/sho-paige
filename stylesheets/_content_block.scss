@@ -1,0 +1,26 @@
+.content-block__header {
+	@include clearfix;
+	&--name {
+		float: left;	
+	}
+	&__action--edit {
+		float: left;
+		margin-top: $sizes-xl + $sizes-s;
+		margin-left: $sizes-m;
+	}	
+}
+
+.content-block__form {
+	margin-bottom: $sizes-xl;
+	&__input {
+		padding: 10px;
+	}
+	&__btn {
+		margin-left: $sizes-m
+	}
+	&__cancel {
+		margin-left: $sizes-m
+	}
+}
+
+

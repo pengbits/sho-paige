@@ -1,0 +1,19 @@
+.paige-app__header {
+  padding: $sizes-m;
+  margin-bottom: $sizes-m;
+  @include clearfix;
+
+  .form-control {
+    border-radius: 4px;
+  }
+
+  .date-time-wrapper {
+    .form-control {
+      border-radius: 4px 0px 0px 4px; 
+    }
+  }
+}
+
+.paige-app__add-promo-btn {
+  float: right;
+}

@@ -1,0 +1,147 @@
+.promo-form {
+  position: relative;
+}
+
+.promo-form-group--inline {
+  display: flex;
+  width: 100%;
+  position: relative;
+  justify-content: flex-start;
+}
+
+.date-time-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: $sizes-m;
+  border: $colors-form-input-border solid 1px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.date-time-addon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  width: $sizes-xl + $sizes-xl;
+}
+
+.input-cancel {
+  z-index: 1;
+}
+
+// maybe a mix-in with a map would be better?
+.promo-form__input {
+  &--window     { @extend .promo-list__item__column--window;    }    
+  &--position   { @extend .promo-list__item__column--position;  }
+  &--name       { @extend .promo-list__item__column--name;      }
+  &--start-date { @extend .promo-list__item__column--start-date;}
+  &--end-date   { @extend .promo-list__item__column--end-date;  }
+  &--tools      { @extend .promo-list__item__column--tools;     }
+
+  label {
+    padding: $sizes-m;
+    width: 150px;
+    line-height: 32px;
+    text-align: right;
+  }
+  
+  input {
+    width: 500px;
+    font-size: 16px;
+    line-height: 32px;
+    text-indent: $sizes-m;
+    border: $colors-form-input-border solid 1px;
+    border-radius: 4px;
+    &:required {
+      border-width: 3px
+    }
+  }
+  
+  .promo-form-group--inline & {
+    @extend .promo-list__item__column;
+    display: inline-block;
+    min-height: $table-row-height;
+    height: auto;
+    
+    input { 
+      width: auto;
+      height: 32px;
+      border-radius: 4px;
+    }
+    
+    & > .promo-form__input__help-block {
+      margin: 0px 0px $sizes-s 0px;
+    }
+
+    &.promo-form__input--name {
+      padding-right: $sizes-m;
+      input {
+        margin-right: 0;
+        width: 100%;
+      }
+    }
+
+  
+    &.promo-form__input--start-date {
+      input {
+        border-radius: 4px 0px 0px 4px; 
+      }
+    }
+
+    &.promo-form__input--end-date {
+      input {
+        border-radius: 4px 0px 0px 4px; 
+      }
+    }
+  }
+}
+
+.promo-form__input--error  {
+  & > label {
+    color: $colors-form-input-error;
+  }
+  input,
+  &.promo-form__input input {
+    border-color: $colors-form-input-error;
+  }
+}
+
+.promo-form__input__help-block {
+  display: inline-block;
+  margin: 0px 0px $sizes-s $sizes-m;
+  position: relative;
+  color: $colors-form-input-error;
+  font-size: 16px;
+}
+
+.promo-form__input--position input {
+  border: $colors-form-input-border solid 2px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.promo-form-group--inline .promo-form__input--position {
+  padding-left: $sizes-xl;
+}
+
+.promo-form__delete {
+  position: absolute;
+  background-color: #ccc;
+  bottom: 0px;
+  right:$sizes-m;
+  text-align: right; 
+}
+
+.promo-form__button {
+  &--cancel {
+    text-align: right;
+    display: inline-block;
+    padding-right: $sizes-m;
+    width: 150px;
+  }
+  
+  &--submit {}
+  
+}

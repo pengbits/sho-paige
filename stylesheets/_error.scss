@@ -1,0 +1,15 @@
+.error {
+  max-width: 400px;
+  border: $colors-error solid 2px;
+  
+  &__header {
+    margin-top: 0;
+    background-color: $colors-error;
+    padding:  $sizes-m;
+    color: $colors-pure-white;
+  }
+  
+  &__message {
+    padding: $sizes-m;
+  }
+}

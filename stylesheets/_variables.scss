@@ -1,0 +1,20 @@
+// paige vars
+$colors-pure-white        : #FFFFFF;
+$colors-pure-black        : #000101;
+$colors-table-border      : #DDDDDD;
+$colors-table-row-white   : $colors-pure-white;
+$colors-table-row-grey    : #f8f9fa;
+$colors-form-input-border : #E1E1E1;
+$colors-form-input-error  : #FF0000;
+$colors-error             : #FF0000;
+
+$sizes-xs  : 1px;
+$sizes-s   : 5px;
+$sizes-m   : 10px;
+$sizes-l   : 15px;
+$sizes-xl  : 20px;
+$sizes-xxl : 50px;
+
+$promo-list-item-promotional-window-active  : green;
+$promo-list-item-promotional-window-expired : red;
+$promo-list-item-promotional-window-upcoming: yellow;

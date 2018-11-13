@@ -1,0 +1,37 @@
+.filter {
+  margin-right: $sizes-m;
+  
+  &,
+  &__form {
+    display: inline-block;
+    width: auto;
+
+    &--datetime {
+      display: flex;
+    }
+
+  }
+    
+  &__form input {
+    padding: 0;
+    line-height: $sizes-xl;
+    height: 24px;
+    border-radius: 0;
+    background-color: transparent
+  }
+  
+  &__form input.form-control {
+    display: inline-block;
+    width: auto;
+  }
+
+}
+
+
+
+// DateTimeWidget generates this div
+.filters__form--datetime > .rdt {
+  display: inline-block;
+  line-height: 32px;  
+
+}
