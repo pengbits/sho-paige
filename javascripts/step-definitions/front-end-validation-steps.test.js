@@ -70,7 +70,11 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/front-end-validation.feature')
 
   test('Create/Edit a Promo and enter forbidden characters', ({ given, when, then, pending }) => {
     given('there are validation rules', given_there_are_validation_rules)
-
+    
+    given('non-alphanumeric characters are forbidden', () => {
+      rules.ctaLink = {'forbidden': /[^a-z0-9-_]/}
+    })
+    
     when('I enter forbidden characters', () => {
       attrs = {
         'name':'the affair 501 teaser',
@@ -85,6 +89,37 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/front-end-validation.feature')
     });
   });
 
+
+  test('Create/Edit a Promo and enter non-numeric values for ids', ({ given, when, then, pending }) => {
+    given('there are validation rules', given_there_are_validation_rules)
+    
+    given('ids must be numbers', () => {
+      expect(rules.seriesId).toBeTruthy()
+      const keys = 'seriesId showId seasonNumber'.split(' ')
+      keys.map(k => {
+        const entry = rules[k] || {}
+        expect(entry.isNumber).toBeTruthy()
+      })
+    })
+
+  	when('I enter forbidden characters', () => {
+      attrs = {
+        'seriesId':'a',
+        'showId':'b',
+        'seasonNumber':'c'
+      }
+    })
+    
+    then('there will be some errors', () => {
+      const errors  = validator(attrs)      
+      
+      expect(errors.seriesId).toEqual('seriesId must be a number')
+      expect(errors.showId).toEqual('showId must be a number')
+      expect(errors.seasonNumber).toEqual('seasonNumber must be a number')
+    })
+  });
+  
+  
   test('Create/Edit a Promo and enter an excessively high value for position', ({ given, when, then }) => {
     given('there are validation rules', given_there_are_validation_rules)
 

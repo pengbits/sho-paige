@@ -47,7 +47,7 @@ export default class {
       contextId,
       contentBlockName,
       contentBlockKey,
-      searchQuery,
+      searchQuery
     } = this.getContainerAttributes(el)
     
     const store = initStore({
@@ -73,7 +73,13 @@ export default class {
   } 
   
   getContainerAttributes(el){
-    return ['contentBlockId','contextId','contentBlockName','contentBlockKey','searchQuery'].reduce(function(obj,key){
+    return [
+      'contentBlockId',
+      'contextId',
+      'contentBlockName',
+      'contentBlockKey',
+      'searchQuery'
+    ].reduce(function(obj,key){
       obj[key] = (el.dataset[key])
       return obj
     },{})

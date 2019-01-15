@@ -4,7 +4,8 @@ Feature: Filters
     Given there is a list of promos
      When I set the filter to 'startDate:1536764074000'
      Then the list of promos will only contain promos that start on or after '1536764074000' 
-       
+     And the list of promos will not be empty
+             
   Scenario: Filter by Start and End Date
     Given there is a list of promos
      When I set the filter to 'startDate:1536353328000,endDate:1537455274000'

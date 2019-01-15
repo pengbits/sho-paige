@@ -1,4 +1,6 @@
-import axios from 'axios'
+import AxiosWrapper from '../utils/axios'
+ const axios = () => AxiosWrapper.instance()
+
 import {createAction} from 'redux-actions'
 import getPromosMock from '../mocks/getPromos'
 import createPromoMock from '../mocks/createPromo'
@@ -48,6 +50,13 @@ export const OPTIONS_FOR_CONTEXT = {
   [SEARCH_CONTEXT]        : OPTIONS.filter(o => !is_clone_opt.test(o.name))
 }
 
+// PromoTools component will render a disabled icon for any option
+// that matches an entry below and that doesn't return truthy props for each item in list
+export const OPTIONS_DISABLED_UNLESS = {
+  'clone with duration' : ['startDate','endDate']
+}
+
+
 //error handling
 const badApiResponse = createAction(BAD_API_RESPONSE)
 const noSearchResults = createAction(NO_SEARCH_RESULTS)
@@ -56,7 +65,7 @@ export const getPromos = function() {
   return function(dispatch, getState){
     const {contentBlock,app,search} = getState()
     const {context} = app || {};
-    // console.log(getState())
+
     if(!context) return new Promise((resolve,reject)=>{
       console.log(`no context found in getPromos`)
       reject()
@@ -80,7 +89,7 @@ const getPromosForContentBlock = function(dispatch, {id}){
   
   return dispatch({
     type: GET_PROMOS,
-    payload: axios.get(`/shomin/api/paige/content-block/${id}`)
+    payload: axios().get(`/shomin/api/paige/content-block/${id}`)
       .then(xhr => {
         if(xhr.data && xhr.data.payload && xhr.data.payload.promotionList) {
           return xhr.data.payload.promotionList
@@ -99,7 +108,7 @@ const getPromosForSearchQuery = function(dispatch, {query}){
   
   return dispatch({
     type: GET_PROMOS,
-    payload: axios.get(`/shomin/api/paige/promotions?query=${query}`)
+    payload: axios().get(`/shomin/api/paige/promotions?query=${query}`)
       .then(xhr => {
         if(xhr.data && xhr.data.page && xhr.data.page.content) {
           return xhr.data.page.content
@@ -116,7 +125,7 @@ export const newPromo    = createAction(NEW_PROMO)
 export const createPromo = function(attrs) {
   return {
     type: CREATE_PROMO,
-    payload: axios.post(`/shomin/api/paige/promotion`, attrs)
+    payload: axios().post(`/shomin/api/paige/promotion`, attrs)
       .then(xhr => xhr.data)
       .catch(e => e) // todo - add error handling
   }
@@ -126,7 +135,7 @@ export const deletePromo   = function({id}) {
   return {
     type: DELETE_PROMO,
     meta: {id},   
-    payload: axios.delete(`/shomin/api/paige/promotion/${id}`)
+    payload: axios().delete(`/shomin/api/paige/promotion/${id}`)
       .then(xhr => xhr.data)
       .catch(e => e) // todo - add error handling 
   }
@@ -157,17 +166,34 @@ export const clonePromo    = function({id,contentBlockId}, opts={}) {
     // with the rootReducer, for example when testing cross-cutting concerns
     // the assignment below handles this case, less explicitly, and would cause mayhem
     // if there were ever a top-level 'list' reducer, but otherwise resolves the issue
-    const state  = getState();
-    const {list} = state.promos || state
-    const match  = list.find(p => p.id == id); if(!match) throw new Error(`Bad id passed to clonePromo: ${id}`)
-    const promo  = Promo.fromAttributes(match)
-    const clone  = promo.clone(opts)
-    // set attributes on the state to those of the cloned promo's, for good measure
-    dispatch(setAttributes(clone.attributes)) 
-    // the cross-cutting reducer will inject the correct contentBlock id,
-    // but we unfortunately don't have access to that updated state in here,
-    // so we're passing the id as a param to the action creator above
-    return dispatch(createPromo({...clone.attributes, contentBlockId}))
+    const state          = getState();
+    const {list}         = state.promos || state
+    const match          = list.find(p => p.id == id); if(!match) throw new Error(`Bad id passed to clonePromo: ${id}`)
+    const promo          = Promo.fromAttributes(match)
+    const promoCopyRegex = Promo.promoCopyRegex()
+    const promoName      = promo.attributes.name.replace(promoCopyRegex, "")
+
+    //find all promos with the same name, excluding Copy #
+    const matchingNames = findMatchingNames(list, promoName, promoCopyRegex)
+
+    //extract Copy # (if any) and return the highest one
+    const highestCopyNumber = getHighestCopyNumber(matchingNames, promoCopyRegex)
+
+    //set next Copy # on the opts object and pass it into the promo's clone method 
+    opts.copyNumber = highestCopyNumber + 1
+    try {
+      const clone = promo.clone(opts)
+
+      // set attributes on the state to those of the cloned promo's, for good measure. attributes go into "details" section
+      dispatch(setAttributes(clone.attributes)) 
+      // the cross-cutting reducer will inject the correct contentBlock id,
+      // but we unfortunately don't have access to that updated state in here,
+      // so we're passing the id as a param to the action creator above
+      //creates the new promo via `createPromo`, line 116. 
+      return dispatch(createPromo({...clone.attributes, contentBlockId}))
+    } catch (e) {
+      alert(e.message)
+    }
   }
 }
 
@@ -185,7 +211,7 @@ export const updatePromo   = function(attrs) {
   //console.log(`UPDATE ${JSON.stringify(attrs)}`)
   return {
     type: UPDATE_PROMO,
-    payload: axios.put(`/shomin/api/paige/promotion/${id}`, attrs)
+    payload: axios().put(`/shomin/api/paige/promotion/${id}`, attrs)
       .then(xhr => xhr.data)
       .catch(e => e)
   }
@@ -219,6 +245,20 @@ const updatePromoInList = (list, promo) => {
       return p 
     }
   })
+}
+
+export const findMatchingNames = (list, promoName, regex) => {
+  return  list.filter(p => {
+    let nameFromList = p.name.replace(regex, "")
+    return nameFromList === promoName
+  })
+}
+
+export const getHighestCopyNumber = (matchingNames, regex) => {
+  return matchingNames.map(p => {
+    let match = p.name.match(regex)
+    return match ? Number(match[1]) : 0
+  }).reduce((prev, cur) => prev > cur ? prev : cur)
 }
 
 // reducer  
@@ -422,7 +462,7 @@ export const promos = (state=initialState, action={}) => {
     // filters  
     case SET_FILTERS:    
       // generate the resulting filter to apply to list 
-      filterBy = generateCompositeFilter(action.payload || [])
+      filterBy = generateCompositeFilter(action.payload || []) // needs to get the filters already in state not just in payload
       const filtered = (state.list || []).filter(filterBy)
       
       return {
@@ -438,7 +478,7 @@ export const promos = (state=initialState, action={}) => {
 
   // create a new function that we can use to apply the filter to the list of promos
   // we'll generate it by iterating over the list of filters, so the resulting function applies them all
-  const generateCompositeFilter = (filterSet) => {
+  export const generateCompositeFilter = (filterSet) => {
     
     // by default the filter does nothing, just passing the promo through
     const noFilter  = (promo => promo)

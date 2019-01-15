@@ -3,15 +3,21 @@
   margin-bottom: $sizes-m;
   @include clearfix;
 
-  .form-control {
-    border-radius: 4px;
-  }
-
-  .date-time-wrapper {
     .form-control {
+      outline: 0;
       border-radius: 4px 0px 0px 4px; 
+      box-shadow: none;
+      border-color: #FFF;
+      border-right: $colors-form-input-border solid 1px;
+      background-color: transparent;
+      padding-left: $sizes-m;
+      
     }
-  }
+    
+    .filter--search-term .form-control {
+      border-radius: 4px;
+      border: $colors-form-input-border solid 1px;
+    }
 }
 
 .paige-app__add-promo-btn {

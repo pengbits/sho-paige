@@ -9,18 +9,18 @@ import {
 import PromoForm from '../components/PromoForm';
 
 const mapStateToProps = (state) => {
-  const {details}      = state.promos
-  const {id,name}      = details
-  const isNew          = id == undefined 
-  const initialValues  = {...details}
-  const ctaTypeOptions = state.configs.CTA_TYPE_DROPDOWNS
-
+  const {details}               = state.promos
+  const {id,name,isDraft}       = details
+  const isNew                   = id == undefined 
+  const initialValues           = {...details}
+  const ctaTypeOptions          = state.configs.CTA_TYPE_DROPDOWNS
   return {
     initialValues,
     isNew,
     id,
     name,
-    ctaTypeOptions
+    ctaTypeOptions,
+    isDraft
   }
 }
 

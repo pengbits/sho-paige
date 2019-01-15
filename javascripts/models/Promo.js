@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-export const DISPLAY_DATE_FORMAT   = 'MM-DD-YYYY hh:mm'
+export const DISPLAY_DATE_FORMAT   = 'MM-DD-YYYY hh:mm A'
 export const UNIX_MILLISECOND_TIMESTAMP_FORMAT = 'x'
 export const SEARCHABLE_PROPERTIES = ['title','name','ctaLink']
 export const SORTABLE_PROPERTIES   = ['position','name','startDate','endDate']
@@ -28,6 +28,9 @@ class Promo {
   static toDateStr   (o) { return moment(o).format(DISPLAY_DATE_FORMAT) }
   static toTimestamp (o) { return moment(o).format(UNIX_MILLISECOND_TIMESTAMP_FORMAT) }
   static parseDate   (s) { return moment(s, DISPLAY_DATE_FORMAT) }
+
+  //copy promo
+  static promoCopyRegex () { return /\s\(Copy\s(0*[1-9][0-9]*)\)$/ }
   
   getStartDate(){
     return !this.get('startDate') ? false : Promo.toDate(this.get('startDate')) // timestamp => moment o
@@ -79,6 +82,10 @@ class Promo {
   }
 
   getOffsetDuration() {
+    if(this.get('endDate') == undefined || this.get('startDate') == undefined){
+      throw new Error('startDate and endDate are required for clone with offset duration')
+    }
+
     const d = this.duration()
     const startDate = this.get('startDate') + d
     const   endDate = this.get('endDate') + d
@@ -97,9 +104,10 @@ class Promo {
   clone(opts={}) {
     // remove the id if it exists
     const {'id': deletedKey, ...attrs} = this.attributes
+    const {copyNumber} = opts
 
     // generate name variant
-    const name = this.copyName()
+    const name = this.copyName(copyNumber)
     
     // change the startDate and endDate if desired
     const {startDate,endDate} = opts.offsetDuration ? 
@@ -109,14 +117,14 @@ class Promo {
       ...attrs,
       name,
       startDate,
-      endDate
+      endDate,
     })
   }
   
-  copyName(){
-    // @todo support for Copy 1 -> Copy 2 etc
+  copyName(copyNumber){
     const name = this.get('name') || 'Untitled Promo'
-    return name.replace(/\s\(Copy\)$/,'') + ' (Copy)'
+    const promoCopyRegex = Promo.promoCopyRegex()
+    return name.replace(promoCopyRegex, "") + " (Copy " + copyNumber + ")"
   }
   
   // filtering by text property

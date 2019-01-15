@@ -139,9 +139,18 @@
     text-align: right;
     display: inline-block;
     padding-right: $sizes-m;
-    width: 150px;
+    width: $sizes-xxl + $sizes-xxl + $sizes-xxl;
   }
   
   &--submit {}
   
+}
+
+.promo-form-group--is-draft {
+  display: inline-block;
+  padding-left: $sizes-m;
+  width: $sizes-xxl + $sizes-xxl + $sizes-xxl;
+  & input {
+    margin-right: $sizes-xs + $sizes-xs + $sizes-xs;
+  }
 }

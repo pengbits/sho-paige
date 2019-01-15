@@ -1,14 +1,14 @@
 import Promo  from '../models/Promo'
 
 export const rules = {
-  'name'     : {'required':true, 'maxLength':200},
-  'title'    : {'required':true, 'maxLength':200},
-  'position' : {'isNumber':true, 'minValue':0, 'maxValue':1000},
-  'ctaLink'  : {'forbidden': /[^a-z0-9-_]/},
-  'endDate'  : {'validForStartDate': true }
+  'name'         : {'required':true, 'maxLength':200},
+  'title'        : {'required':true, 'maxLength':200},
+  'position'     : {'isNumber':true, 'minValue':0, 'maxValue':1000},
+  'endDate'      : {'validForStartDate': true },
+  'seriesId'     : {'isNumber':true },
+  'showId'       : {'isNumber':true },
+  'seasonNumber' : {'isNumber':true }
 }
-  
-
 
 // validation#validateInput()
 // called against a single field

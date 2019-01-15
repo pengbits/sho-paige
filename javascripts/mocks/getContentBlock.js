@@ -83,6 +83,19 @@ export default {
       "position": 20
     }, {
       "id": 6,
+      "name": "Toast The Affair Season 2 TBT preview",
+      "title": "Catch Up on Seasons 1-3 for TBT preview",
+      "subTitle": "Don't miss new episodes Sundays at 9PM ET/PT",
+      "smallImageUrl": "https://www.sho.com/site/image-bin/images/1031103_4_0/1031103_4_0_rcp01_640x360.jpg",
+      "imageUrl": "https://www.sho.com/site/image-bin/images/1031103_4_0/1031103_4_0_rcp01_640x360.jpg",
+      "ctaLabel": null,
+      "ctaType": "series promo video",
+      "ctaLink": "/video/62285/the-affair-series-recap",
+      "startDate": 1538452800000,
+      "endDate": 1539576000000,
+      "position": 50
+    },{
+      "id": 7,
       "name": "Carrots The Affair Season 1-3 Recap",
       "title": "Catch Up on Seasons 1-3 of The Affair in 30 seconds",
       "subTitle": "Don't miss new episodes Sundays at 9PM ET/PT",

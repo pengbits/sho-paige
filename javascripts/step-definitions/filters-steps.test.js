@@ -9,6 +9,7 @@ import getContentBlockMock from '../mocks/getContentBlock'
 // reducers
 import rootReducer from '../redux'
 import {setFilter,setFilters} from '../redux/filters'
+import {generateCompositeFilter} from '../redux/promos'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -49,9 +50,14 @@ defineFeature(
       const [type,value] = !!matches ? matches.slice(1) : []
       return {type,value}
     }, {});
+    
+    // iterate over filters to send in multiple dispatches, like our app
+    afterState = filters.reduce((state,filter) => {
+      store = mockStore(state)
+      store.dispatch(setFilters([filter]))
+      return resultingState(store, rootReducer, state)
+    }, initialState)
 
-    store.dispatch(setFilters(filters))
-    afterState = resultingState(store, rootReducer, initialState)
     expect(afterState.filters).toEqual(expect.arrayContaining(filters))  
   }
   
@@ -118,60 +124,50 @@ defineFeature(
     expect(promos_that_have_this_phrase_in_this_property(list,phrase,propertyName)).toHaveLength(filtered.length)
   }
   
-  
+  //
+  // 01 Filter by Start Date
+  // ---------------–-----------------------------------------------------------
   test('Filter by Start Date', ({ given, when, then }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
-    
-    when(/^I set the filter to '(.+)'$/, (pairs) => {
-      when_i_set_the_filter_to(pairs)
-    })
+    given('there is a list of promos',    given_there_is_a_list_of_promos)
+    when(/^I set the filter to '(.+)'$/,  when_i_set_the_filter_to)
     
     then(/^the list of promos will only contain promos that start on or after '(.+)'$/, (startDate) => {
       then_the_list_of_promos_will_only_contain_promos_that_start_on_or_after(startDate)
     })
+    then('the list of promos will not be empty', then_the_list_of_promos_will_not_be_empty)
   })
   
   
+  //
+  // 02 Filter by Start and End Date
+  // ---------------–-----------------------------------------------------------
   test('Filter by Start and End Date', ({ given, when, then }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
-
-    when(/^I set the filter to '(.+)'$/, (pairs) => {
-      when_i_set_the_filter_to(pairs)
-    })
-
+    given('there is a list of promos',    given_there_is_a_list_of_promos)
+    when(/^I set the filter to '(.+)'$/,  when_i_set_the_filter_to)
+    
     then(/^the list of promos will only contain promos that start on or after '(.+)' and end on or before '(.+)'$/, (startDate,endDate) => {
       then_the_list_of_promos_will_only_contain_promos_that_start_on_or_after_and_end_on_or_before(startDate,endDate)
     })
-    
-    then('the list of promos will not be empty', () => {
-      then_the_list_of_promos_will_not_be_empty()
-    })
+    then('the list of promos will not be empty', then_the_list_of_promos_will_not_be_empty)
   });
   
   
+  //
+  // 03 Filter by Invalid Date
+  // ---------------–-----------------------------------------------------------
   let exception
   test('Filter by Invalid Date', ({ given, when, then }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
-
-    when(/^I set the filter to '(.+)'$/, (pairs) => {
-      when_i_set_the_filter_to(pairs)
-    })
-    
-    then('the list of promos will be empty', () => {
-      then_the_list_of_promos_will_be_empty()
-    })
+    given('there is a list of promos',       given_there_is_a_list_of_promos)
+    when(/^I set the filter to '(.+)'$/,     when_i_set_the_filter_to)
+    then('the list of promos will be empty', then_the_list_of_promos_will_be_empty)
   })
   
+
+  //
+  // 04 Filter by Invalid Filter
+  // ---------------–-----------------------------------------------------------
   test('Filter by Invalid Filter', ({ given, when, then }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
+    given('there is a list of promos', given_there_is_a_list_of_promos)
     
     when('I set the filter to something that is not in the list of filter types', () => {
       try { when_i_set_the_filter_to('wibble:true') } 
@@ -183,39 +179,32 @@ defineFeature(
     })
   })
   
-  
+  //
+  // 04 Filter by Text
+  // ---------------–-----------------------------------------------------------  
   test('Filter by Text', ({ given, when, then }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
-    
-    when(/^I set the filter to '(.+)'$/, (pairs) => {
-      when_i_set_the_filter_to(pairs)
-    })
+    given('there is a list of promos',    given_there_is_a_list_of_promos)
+    when(/^I set the filter to '(.+)'$/,  when_i_set_the_filter_to)
 
     then(/^the list of promos will only contain promos that have \'(.+)\' in the title$/, (phrase) => {
       then_the_list_of_promos_will_only_contain_promos_that_have_this_phrase_in_this_property(phrase, 'title')
     })
-    
-    then('the list of promos will not be empty', () => {
-      then_the_list_of_promos_will_not_be_empty()
-    })
+    then('the list of promos will not be empty', then_the_list_of_promos_will_not_be_empty)
   })
-  
+
+
+  //
+  // 04 Filter by Text and End Date
+  // ---------------–-----------------------------------------------------------  
   test('Filter by Text and End Date', ({ given, when, then, pending }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
-    
-    when(/^I set the filter to '(.+)'$/, (pairs) => {
-      when_i_set_the_filter_to(pairs)
-    })
+    given('there is a list of promos',     given_there_is_a_list_of_promos)  
+    when(/^I set the filter to '(.+)'$/,   when_i_set_the_filter_to)
 
     then(/^the list of promos will only contain promos that have \'(.+)\' in the title and that end on or before '(.*)'$/, (phrase, endDate) => {
       const {list,filtered} = afterState.promos
       const list1 = promos_that_have_this_phrase_in_this_property(list,phrase,'title')
       const list2 = promos_that_end_on_or_before(list1, endDate)
-      console.log(`with '${phrase}' in title, ending on ${Promo.toDateStr(Number(endDate))}`)
+      console.log(`|filters| promos with '${phrase}' in title, ending on ${Promo.toDateStr(Number(endDate))}`)
 
       trace('list',    list,     'endDate', 'title')
       trace('expects', list2,    'endDate', 'title')
@@ -229,13 +218,8 @@ defineFeature(
   });
   
   test('Filter by Text and Find Nothing', ({ given, when, then, pending }) => {
-    given('there is a list of promos', () => {
-      given_there_is_a_list_of_promos()
-    })
-
-    when(/^I set the filter to '(.+)'$/, (pairs) => {
-      when_i_set_the_filter_to(pairs)
-    })
+    given('there is a list of promos',    given_there_is_a_list_of_promos)
+    when(/^I set the filter to '(.+)'$/,  when_i_set_the_filter_to)
 
     then('the list of promos will be empty', () => {
       then_the_list_of_promos_will_be_empty()

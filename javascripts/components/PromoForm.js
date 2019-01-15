@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
-import { TextInput, DateTimeInput, SelectInput } from './Forms'
+import { TextInput, DateTimeInput, SelectInput, CheckboxInput } from './Forms'
 import { getValidator } from '../utils/validation'
 import Promo from '../models/Promo'
 
@@ -11,7 +11,8 @@ class PromoForm extends Component {
       id,
       isNew,
       name,
-      ctaTypeOptions
+      ctaTypeOptions,
+      isDraft
     } = this.props
     const {
       handleSubmit, 
@@ -19,7 +20,7 @@ class PromoForm extends Component {
       submitting,
       change
     } = this.props;
-    
+
     return (
       <form className="promo-form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
         <div className='promo-form-group promo-form-group--inline'>
@@ -27,25 +28,25 @@ class PromoForm extends Component {
             data-promotional-window='disabled'
           >
           </span>
-          <TextInput name='position'       inline={true} size={4} />
-          <TextInput name='name'           inline={true} required={true} />
-          <DateTimeInput name='start date' inline={true} resetValue={this.clearSection.bind(this)} />
-          <DateTimeInput name='end date'   inline={true} resetValue={this.clearSection.bind(this)} />
+          <TextInput name='position'        inline={true} size={4} />
+          <TextInput name='name'            inline={true} required={true} />
+          <DateTimeInput name='startDate'  inline={true} resetValue={this.clearSection.bind(this)} />
+          <DateTimeInput name='endDate'    inline={true} resetValue={this.clearSection.bind(this)} />
           <span className='promo-form__input promo-form__input--tools'></span>
         </div>
         <div className='promo-form-group form-group'>
-          <TextInput name='title'          required={true} />
-          <TextInput name='top line'        />
-          <TextInput name='series id'       />
-          <TextInput name='season number'   />
-          <TextInput name='show id'         />          
-          <TextInput name='large image Url' />
-          <TextInput name='small image Url' />
+          <TextInput name='title'           required={true} />
+          <TextInput name='topLine'        />
+          <TextInput name='seriesId'       />
+          <TextInput name='seasonNumber'   />
+          <TextInput name='showId'         />          
+          <TextInput name='largeImageUrl' />
+          <TextInput name='smallImageUrl' />
           {(ctaTypeOptions || []).length
-             ? <SelectInput name='cta type' className='cta-type-dropdown' options={ctaTypeOptions}/> : 
-               <TextInput name='cta type' /> }
-          <TextInput name='cta label'       />
-          <TextInput name='cta link'        />
+             ? <SelectInput name='ctaType' className='cta-type-dropdown' options={ctaTypeOptions}/> : 
+               <TextInput name='ctaType' /> }
+          <TextInput name='ctaLabel'       />
+          <TextInput name='ctaLink'        />
         </div>
         <div className='promo-form-group form-group'>
           <a className='promo-form__button promo-form__button--cancel' href="#" onClick={this.onCancel.bind(this)}>
@@ -54,6 +55,9 @@ class PromoForm extends Component {
           <button className='promo-form__button promo-form__button--submit btn btn-primary' type="submit" disabled={pristine || submitting}>
             Save
           </button>
+          <div className='promo-form-group--is-draft'>
+            <CheckboxInput name="setDraftMode" label="Draft Mode" isDraft={isDraft}/>
+          </div>
         </div>        
         {!isNew &&
         <div className='promo-form__delete'>
@@ -68,17 +72,19 @@ class PromoForm extends Component {
       isNew,
       createPromo,
       updatePromo,
-      id
+      id,
+      isDraft
     } = this.props
     
     const {
-      startDate, endDate, ...input
+      startDate, endDate, setDraftMode, ...input
     } = attrs
     
     // only convert non-null input to datetimes
     let json = {...input};
     if(startDate) json.startDate = Promo.toTimestamp(startDate)
     if(endDate)   json.endDate   = Promo.toTimestamp(endDate)
+    json.isDraft                 = setDraftMode !== undefined ? setDraftMode : isDraft
 
     if(isNew){
       createPromo(json)
@@ -95,7 +101,9 @@ class PromoForm extends Component {
     if(confirm("Are you sure you want to delete this Promo Detail? This cannot be undone.")) {
       const {deletePromo,id} = this.props
       deletePromo({id})
-    } 
+    } else {
+      e.preventDefault()
+    }
   }
 
   clearSection(e, section){

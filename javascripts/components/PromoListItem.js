@@ -36,7 +36,11 @@ class PromoListItem extends Component {
           {endDate && Promo.toDateStr(endDate)}
         </span>
         <span className='promo-list__item__column promo-list__item__column--tools'>
-          <PromoTools id={id} />
+          <PromoTools 
+            id={id} 
+            startDate={startDate}
+            endDate={endDate} 
+          />
         </span>
       </div>
     )

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import $ from 'jquery'
 import {camelize,hyphenize} from '../utils/string'
+import cn from 'classnames'
 
 class PromoTools extends Component {
 
-  
   render(){
     return (<span className='promo-tools'>{
       this.props.options.map(this.renderOption.bind(this))
@@ -12,17 +12,22 @@ class PromoTools extends Component {
     </span>)
   }
     
-  renderOption({name,icon}){
+  renderOption({name,icon,disabled}){
     // <a onClick={onClick} href="#" data-action='editPromo' name='edit' className="promo-tools__action promo-tools__action--edit"> 
     //   <span className="fa fa-pencil text-success"></span>
     // </a>
+    // console.log(`${name} disabled:${disabled}`)
     return (<a 
       key={name}
       href="#"
       name={name}
-      data-action={camelize(name)}
+      data-action={!disabled ? camelize(name) : ''}
       onClick={this.onClick.bind(this)} 
-      className={`promo-tools__action promo-tools__action--${hyphenize(name)}`}>
+      className={cn(
+        'promo-tools__action',
+        'promo-tools__action--' + hyphenize(name),
+      { 'promo-tools__action--disabled' : disabled } 
+      )}>
       {icon.map(i => <span className={`fa ${i}`} key={i}></span>)}
     </a>)
   }

@@ -5,16 +5,22 @@ import {
   clonePromo, 
   cloneWithDurationPromo, 
   deletePromo,
-  OPTIONS_FOR_CONTEXT
+  OPTIONS_FOR_CONTEXT,
+  OPTIONS_DISABLED_UNLESS
 } from '../redux/promos'
 
 import PromoTools from '../components/PromoTools';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  
   return {
     isEditing      : state.promos.isEditing,
-    options        : OPTIONS_FOR_CONTEXT[state.app.context],
-    contentBlockId : state.contentBlock.id
+    contentBlockId : state.contentBlock.id,
+    options        : OPTIONS_FOR_CONTEXT[state.app.context].map(opt => {
+      const requiredProps = OPTIONS_DISABLED_UNLESS[opt.name]
+      const disabled      = requiredProps && requiredProps.find(k => !ownProps[k])
+      return {disabled, ...opt}
+    })
   }
 }
 

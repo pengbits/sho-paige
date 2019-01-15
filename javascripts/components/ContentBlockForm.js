@@ -31,7 +31,7 @@ class ContentBlockForm extends Component {
 
   renderForm() {
     const {handleSubmit} = this.props
-    return (
+    return (      
       <div className="content-block">
        <form className="content-block__form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
           <Field 
@@ -39,7 +39,7 @@ class ContentBlockForm extends Component {
             className='content-block__form__input' 
             name='contentBlockName' 
           />
-          <button className='btn btn-primary content-block__form__btn' type="submit">
+          <button className='btn btn-primary content-block__form__btn' type="submit"> 
             Save
           </button>
           {<button 
@@ -65,6 +65,7 @@ class ContentBlockForm extends Component {
   
   cancel(e){
     e.preventDefault()
+    this.props.reset();
     this.props.cancelEditingContentBlock()
   }
 }

@@ -2,7 +2,11 @@ import React, { Component } from 'react'
 import Datetime from 'react-datetime'
 import moment from 'moment'
 import { Field } from 'redux-form'
-import {camelize,hyphenize} from '../utils/string'
+import {
+  camelize,
+  hyphenize,
+  humanize
+} from '../utils/string'
 
 
 const inputAttributes = ({name,className,size,meta={}}) => {
@@ -46,19 +50,20 @@ export const DateTimeWidget = (attrs) => {
   const {value, clearFilterField, resetValue, name, ...props} = attrs
   const {inputProps} = props
 
+  // removed open={false} config setting for TOOL-3829
+  // changed tab indenting (also just wanted to result in a bigger git change) 
   return (
-      <Datetime 
-        renderInput={renderDateTimeWidget}
-        {...props}
-        value={!!value ? moment(value): undefined} 
-        utc={false}
-        inputProps={{
-          ...inputProps,
-          readOnly: true,
-          attrs: attrs
-        }}    
-        open={false}
-      />
+    <Datetime 
+      renderInput={renderDateTimeWidget}
+      {...props}
+      value={!!value ? moment(value): undefined} 
+      utc={false}
+      inputProps={{
+        ...inputProps,
+        readOnly: true,
+        attrs: attrs
+      }}
+    />
   )
 }
 
@@ -87,7 +92,7 @@ const renderTextInput = ({input,meta,inline,className,size,required}) => {
   return (
     <div className={classNames}>
       {!inline && 
-        <label htmlFor={name}>{name}</label>
+        <label htmlFor={name}>{humanize(name)}</label>
       }
       <input {...input} placeholder={placeholder} required={required} type='text' {...opts}/>
       {(error && touched) &&
@@ -107,6 +112,29 @@ export const TextInput = ({name,size,inline,className,required}) => {
       size={size} 
       required={required}
     />
+  )
+}
+
+export const CheckboxInput = ({name, label, isDraft}) => {
+  return (
+    <Field 
+      component={renderCheckboxInput} 
+      name={name} 
+      type="checkbox"
+      label={label}
+      isDraft={isDraft}
+    />
+  )
+}
+
+const renderCheckboxInput = ({input, type, label, isDraft, meta}) => {
+  const {value, name} = input
+  const isChecked = isDraft && meta.dirty == false ? isDraft : value
+  return (
+    <label>
+      <Field {...input} component="input" type={type} name={name} checked={isChecked}/>
+      {label}
+    </label>
   )
 }
 
