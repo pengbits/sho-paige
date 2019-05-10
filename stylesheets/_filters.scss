@@ -9,13 +9,13 @@
     &--datetime {
       display: flex;
     }
-
+  
   }
     
   &__form input {
     padding: 0;
     line-height: $sizes-xl;
-    height: 24px;
+    height: 34px;
     border-radius: 0;
     background-color: transparent
   }
@@ -23,11 +23,43 @@
   &__form input.form-control {
     display: inline-block;
     width: auto;
+
+    &--search-term {
+      height: 36px;
+      position: relative;
+      width: 201px;
+    }
+  }
+
+  &__input {
+    &--show-icon {
+      border-radius: 4px 0px 0px 4px !important;
+
+    }
+  }
+
+  &__cancel {
+    height: 36px;
+    width: 40px;
+    border-top: $colors-form-input-border solid 1px;
+    border-right: $colors-form-input-border solid 1px;
+    border-bottom: $colors-form-input-border solid 1px;
+    border-left: none;
+    border-radius: 0px 4px 4px 0px;
+    position: absolute;
+    font-size: 18px;
   }
 
 }
 
+.fa-filter {
+  margin-right: 10px;
+  color: #B8BDBD;
 
+  & ::before {
+    content:"\F0B0"
+  }
+}
 
 // DateTimeWidget generates this div
 .filters__form--datetime > .rdt {

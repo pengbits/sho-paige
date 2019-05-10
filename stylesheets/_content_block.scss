@@ -1,7 +1,12 @@
 .content-block__header {
 	@include clearfix;
 	&--name {
-		float: left;	
+		width: auto;
+		max-width: 90%;
+		float: left;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
 	}
 	&__action--edit {
 		float: left;
@@ -11,15 +16,25 @@
 }
 
 .content-block__form {
+	display: flex;
+	align-items: flex-end;
 	margin-bottom: $sizes-xl;
 	&__input {
 		padding: 10px;
+		border: 1px solid $colors-table-border; 
+		border-radius: 4px;
 	}
 	&__btn {
 		margin-left: $sizes-m
 	}
 	&__cancel {
-		margin-left: $sizes-m
+		margin-left: $sizes-m;
+		border: 1px solid $colors-table-border; 
+		border-radius: 4px;
+		background-color: $colors-pure-white; 
+		height: 33px;
+		width: 33px;
+		font-size: 18px;
 	}
 }
 

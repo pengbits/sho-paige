@@ -1,7 +1,15 @@
 .paige-app__header {
-  padding: $sizes-m;
+  padding: $sizes-m 0;
   margin-bottom: $sizes-m;
   @include clearfix;
+
+  &--inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+  }
 
     .form-control {
       outline: 0;
@@ -22,4 +30,5 @@
 
 .paige-app__add-promo-btn {
   float: right;
+  height: 36px;
 }

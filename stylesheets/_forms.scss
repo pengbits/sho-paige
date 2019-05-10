@@ -9,6 +9,14 @@
   justify-content: flex-start;
 }
 
+.promo-form-group--footer {
+  background-color: #f8f9fa;
+  display: flex; 
+  align-items: center;
+  padding: $sizes-l 0;
+  margin-bottom: 0;
+}
+
 .date-time-wrapper {
   display: flex;
   align-items: center;
@@ -29,29 +37,41 @@
 
 .input-cancel {
   z-index: 1;
+  font-size: 18px;  
 }
 
 // maybe a mix-in with a map would be better?
 .promo-form__input {
   &--window     { @extend .promo-list__item__column--window;    }    
   &--position   { @extend .promo-list__item__column--position;  }
+  &--context    { @extend .promo-list__item__column--context;   }
   &--name       { @extend .promo-list__item__column--name;      }
   &--start-date { @extend .promo-list__item__column--start-date;}
   &--end-date   { @extend .promo-list__item__column--end-date;  }
   &--tools      { @extend .promo-list__item__column--tools;     }
-
+  display: flex;
+  align-items: center;
   label {
-    padding: $sizes-m;
+    padding: $sizes-m 0px;
     width: 150px;
     line-height: 32px;
     text-align: right;
+    margin-right: $sizes-xl + $sizes-s;
   }
   
   input {
-    width: 500px;
-    font-size: 16px;
     line-height: 32px;
     text-indent: $sizes-m;
+  } 
+
+  textarea {
+    padding: 10px;
+   }
+
+  input,
+  textarea {
+    width: 500px;
+    font-size: 16px;
     border: $colors-form-input-border solid 1px;
     border-radius: 4px;
     &:required {
@@ -59,10 +79,22 @@
     }
   }
   
+  &--description {
+    align-items: flex-start;
+    margin: $sizes-m 0;
+    label {
+      padding-top: 0px;
+      display: block;
+      float: left;
+    }
+    textarea {
+      height: 300px;
+     }
+  }
   .promo-form-group--inline & {
     @extend .promo-list__item__column;
     display: inline-block;
-    min-height: $table-row-height;
+    min-height: 0;
     height: auto;
     
     input { 
@@ -78,20 +110,16 @@
     &.promo-form__input--name {
       padding-right: $sizes-m;
       input {
+        height: 34px;
         margin-right: 0;
         width: 100%;
       }
     }
-
   
-    &.promo-form__input--start-date {
-      input {
-        border-radius: 4px 0px 0px 4px; 
-      }
-    }
-
+    &.promo-form__input--start-date,
     &.promo-form__input--end-date {
       input {
+        border-width : 0;
         border-radius: 4px 0px 0px 4px; 
       }
     }
@@ -117,9 +145,11 @@
 }
 
 .promo-form__input--position input {
-  border: $colors-form-input-border solid 2px;
+  border: $colors-form-input-border solid 1px;
   border-radius: 4px;
   outline: none;
+  text-align: center;
+  text-indent: 0;
 }
 
 .promo-form-group--inline .promo-form__input--position {
@@ -128,9 +158,7 @@
 
 .promo-form__delete {
   position: absolute;
-  background-color: #ccc;
-  bottom: 0px;
-  right:$sizes-m;
+  right: $sizes-xl;
   text-align: right; 
 }
 
@@ -138,19 +166,44 @@
   &--cancel {
     text-align: right;
     display: inline-block;
-    padding-right: $sizes-m;
-    width: $sizes-xxl + $sizes-xxl + $sizes-xxl;
+    color: $promo-list-item-promotional-window-draft;
+    margin-left: $sizes-xl + $sizes-s;
   }
   
   &--submit {}
   
 }
 
-.promo-form-group--is-draft {
-  display: inline-block;
-  padding-left: $sizes-m;
-  width: $sizes-xxl + $sizes-xxl + $sizes-xxl;
+.promo-form__button--cancel:hover {
+  color: $dark_grey;
+  text-decoration: none;
+}
+
+.promo-form__input--text-area label {
+  vertical-align: top
+}
+
+.promo-form__error-message {
+  margin: $sizes-m;
+  padding: $sizes-m;
+  color: $colors-form-input-error;
+  border: $colors-form-input-error solid 2px;
+}
+
+.promo-form-group--draft-mode {
+  display: flex;
+  align-items: center;
+  margin-left: $sizes-xl + $sizes-s;
+  margin-bottom: 0;
   & input {
     margin-right: $sizes-xs + $sizes-xs + $sizes-xs;
   }
+}
+
+.footer__left-buttons {
+  width: 150px;
+  display:flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: $sizes-xl + $sizes-s;
 }

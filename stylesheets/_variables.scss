@@ -7,6 +7,7 @@ $colors-table-row-grey    : #f8f9fa;
 $colors-form-input-border : #E1E1E1;
 $colors-form-input-error  : #FF0000;
 $colors-error             : #FF0000;
+$dark_grey                : #999;
 
 $sizes-xs  : 1px;
 $sizes-s   : 5px;
@@ -15,6 +16,7 @@ $sizes-l   : 15px;
 $sizes-xl  : 20px;
 $sizes-xxl : 50px;
 
-$promo-list-item-promotional-window-active  : green;
-$promo-list-item-promotional-window-expired : red;
-$promo-list-item-promotional-window-upcoming: yellow;
+$promo-list-item-promotional-window-active  : $brand-success;
+$promo-list-item-promotional-window-expired : $brand-danger;
+$promo-list-item-promotional-window-upcoming: $brand-warning;
+$promo-list-item-promotional-window-draft   : #B8BDBD;;

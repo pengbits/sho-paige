@@ -20,7 +20,7 @@ $table-row-height : $sizes-xl + $sizes-xxl;
   transition-property: background-color;
   transition-duration: 0.5s; // must match value in form-hooks-middleware
   transition-timing-function: ease-in-out;
-  
+  // text-align: center;
   &:nth-child(odd) {
     background-color:  $colors-table-row-grey;
   }
@@ -42,20 +42,28 @@ $table-row-height : $sizes-xl + $sizes-xxl;
   
   &--head {
     .promo-list__item__column--position, 
+    .promo-list__item__column--context,
     .promo-list__item__column--name,
     .promo-list__item__column--start-date,
-    .promo-list__item__column--end-date
-      {cursor: pointer;}
+    .promo-list__item__column--end-date {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
   }
 
   &__column {
     min-height:  $table-row-height;
-    padding: $sizes-l 0;
+    padding: $sizes-l;
     font-size: 16px;
-    line-height: 32px;
+    line-height: 22px;
     
     &--active {
       font-weight: bold;
+    }
+
+    &--header {
+      font-size: 11px;
     }
 
     &--window {
@@ -70,14 +78,16 @@ $table-row-height : $sizes-xl + $sizes-xxl;
       &[data-schedule-status="active"]   { background-color: $promo-list-item-promotional-window-active   }
       &[data-schedule-status="expired"]  { background-color: $promo-list-item-promotional-window-expired  }
       &[data-schedule-status="upcoming"] { background-color: $promo-list-item-promotional-window-upcoming }
+      &[data-schedule-status="draft"]    { background-color: $promo-list-item-promotional-window-draft }
     }
     
     &--window     { flex-basis: 0%  }
-    &--position   { flex-basis: 10% }
-    &--name       { flex-basis: 35% }
+    &--position   { flex-basis: 10%; min-width: 90px; }
+    &--context    { flex-basis: 25% }
+    &--name       { flex-basis: 25% }
     &--start-date { flex-basis: 15% }
     &--end-date   { flex-basis: 15% }
-    &--tools      { flex-basis: 25% }
+    &--tools      { flex-basis: 10% }
     
     &--position {
       padding-left: $sizes-xl 
@@ -86,6 +96,9 @@ $table-row-height : $sizes-xl + $sizes-xxl;
     &--tools {
       text-align: right; 
       padding-right: $sizes-l
+    }
+    &:last-child {
+      padding: $sizes-l $sizes-l $sizes-l 0;
     }
   }
   
@@ -103,22 +116,43 @@ $table-row-height : $sizes-xl + $sizes-xxl;
 
     &__action {}
     &__action--disabled {
-      opacity: 0.25
+      opacity: 0.25;
+      cursor: default;
     }
   }
 
   .promo-tools a {
-    margin-right: 8px;
+    margin-right: 13px;
   }
 
   .promo-tools a:nth-last-child(-n+2) {
-    margin-right: 2px;
+    margin-right: 7px;
   }
 
   .icon-copy-with-duration {
-    margin-right: 0;
+    background-image: url('../../../library/images/svg/clone-icon-duration.svg');
+    background-repeat: no-repeat;
+    width: 18px;
+    height: 17px;
     position: relative;
-    top: -6px;
-    left: -4px;
+    top: 2px;
+    color: #337ab7;
   }
+}
+
+// adjust column widths for diff contexts
+.promo-list--content-block-context {
+  .promo-list__item__column--name {
+    flex-basis: 40%;  
+    overflow: hidden;
+  }
+  .promo-list__item__column--start-date,
+  .promo-list__item__column--end-date {
+    flex-basis: 20%;
+  }
+}
+
+.promo-list .pagination  {
+  transform: translateX(-50%);
+  margin-left: 50%;
 }
