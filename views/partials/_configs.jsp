@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%-- let's go ahead and define the dropdowns for ctaLink - this would need different jsps for diff contexts --%>
+<%-- let"s go ahead and define the dropdowns for ctaLink - this would need different jsps for diff contexts --%>
 <script type="text/javascript">
 window.paige = window.paige || {}
 window.paige.configs = window.paige.configs || {}
@@ -27,5 +27,20 @@ window.paige.configs.CTA_TYPE_DROPDOWNS = [
   "stream link",
   "title page link",
   "trailer video"
-];
+]; 
+
+// store fotm defaults for the content-block under the content-block"s name in lowercase
+window.paige.configs.FORM_DEFAULTS = {
+  CONTENT_BLOCKS: {
+    "recaps" : {
+      "ctaLabel": {
+        "input": "title", 
+        "template": "READ MORE AT {title}"
+      },
+      "ctaType": {
+        "value": "other external link"
+      }
+    }
+  }
+}
 </script>

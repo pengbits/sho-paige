@@ -35,14 +35,11 @@
         <tbody>
           <c:forEach var="item" items="${contextListPage.contextItemList}">
             <c:if test="${not empty item.title}">
-
-             <c:if test="${item.isSeriesEnabled eq false}">
-             	<c:set var="isTxtEnabled" value="color:#F08080" />
-             </c:if>
-              <tr data-filter-name="<c:out value="${item.id}" /><c:out value=" " /><c:out value="${item.title}" />">
-                <td style="${isTxtEnabled}"><c:out value="${item.id}" /></td>
-                <td style="${isTxtEnabled}"><c:out value="${item.title}" /></td>
-                <td class="align-right" style="${isTxtEnabled}">
+            <c:set var="highlightInactiveSeries" value = "${item.isSeriesEnabled ? '' : 'style = color:#F08080'}" />
+              <tr data-filter-name="<c:out value="${item.id}" /><c:out value="${item.title}" />">
+                <td ${highlightInactiveSeries}><c:out value="${item.id}" /></td>
+                <td ${highlightInactiveSeries}><c:out value="${item.title}" /></td>
+                <td class="align-right" ${highlightInactiveSeries}>
                   <c:url var="baseUrl" value="${item.baseUrl}"></c:url>
                   <c:choose>
                     <c:when test="${update.permitted}">

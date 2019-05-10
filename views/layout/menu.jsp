@@ -14,7 +14,7 @@
 			</div>
 
 			<div class="collapse navbar-collapse" id="navbar-collapse">
-
+				<c:if test="${ not nav_hide_search}">
 					<div class="nav navbar-nav navbar-right navbar-search">
 						<c:url value="${paigeSearchNav.link}" var="searchUrl" />
 						<form class="navbar-form" role="search" method="get" action="<c:out value='${searchUrl}' />">
@@ -28,7 +28,7 @@
 							</div>
 						</form>
 					</div>
-
+				</c:if>
 				
 				<ul class="nav navbar-nav navbar-right">
 					<c:forEach items="${paigeNavigation}" var="navItem">
