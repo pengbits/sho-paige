@@ -10,15 +10,20 @@ import getPromosMock from '../mocks/getPromos'
 const ContentBlockMock = getContentBlockMock.payload
 
 // reducers
-import reducer, { 
-  setAttributes, SET_ATTRIBUTES,
-  createPromo,   CREATE_PROMO,
-  selectPromo,   SELECT_PROMO,
-  toggleDetails, TOGGLE_DETAILS,
-  cancelEditing, CANCEL_EDITING
-} from '../redux/promos'
-
 import rootReducer from '../redux'
+import reducer from '../redux/promos'
+import { 
+  setAttributes,
+  createPromo,
+  selectPromo, 
+  toggleDetails,
+  cancelEditing,
+} from '../redux/promos/actions'
+
+import {
+  CANCEL_EDITING,
+  CREATE_PROMO
+} from '../redux/promos/types'
 
 import {
   APPLY_SORT
@@ -67,8 +72,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/create-promo.feature'), test =
            `${CREATE_PROMO}_PENDING`,
            `${CREATE_PROMO}_FULFILLED`,
            APPLY_SORT
-         ])
-         
+         ])         
        })
     });
     

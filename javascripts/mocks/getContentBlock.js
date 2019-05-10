@@ -1,6 +1,9 @@
 // API GET /api/paige/content-block/{id}
 // we are unlikely to need to load this via xhr, since the
 // the active contentBlock's id will be passed into the app via the jsp
+import Promo from '../models/Promo'
+const timestamp = (dateStr) => (Promo.toTimestamp(Promo.parseDate(dateStr)))
+
 export default {
   "timestamp": 1533231922482,
   "status": {
@@ -18,7 +21,7 @@ export default {
     "updatedDate": 1532968789600,
     "promotionList" : [{
       "id": 1,
-      "name": "Apples The Affair Season 4 Lookahead",
+      "name": "Apples The Affair Season 4 Lookahead", 
       "title": "Find out what's ahead on Season 4",
       "subTitle": "Don't miss new episodes Sundays at 9PM ET/PT",
       "smallImageUrl": "https://www.sho.com/site/image-bin/images/1031103_4_0/1031103_4_0_pro05_640x360.jpg",
@@ -26,8 +29,9 @@ export default {
       "ctaLabel": null,
       "ctaType": "series promo video",
       "ctaLink": "/video/62044/the-affair-season-4-lookahead",
-      "startDate": 1536591274000,
-      "endDate": 1537379798000,
+      "startDate": timestamp('01-01-19'),
+      "endDate":   timestamp('01-15-19'),
+      "isDraft": true,
       "position": 20
     }, {
       "id": 2,
@@ -39,8 +43,9 @@ export default {
       "ctaLabel": null,
       "ctaType": "series promo video",
       "ctaLink": "/video/61066/the-affair-season-4",
-      "startDate": 1536591274000,
-      "endDate": 1537379798000,
+      "startDate": timestamp('01-17-19'),
+      "endDate":   timestamp('01-28-19'),
+      "isDraft": true,
       "position": 10
     }, {
       "id": 3,
@@ -52,8 +57,9 @@ export default {
       "ctaLabel": null,
       "ctaType": "bts video",
       "ctaLink": "/video/61962/the-affair-characters-alison-cole-and-ben",
-      "startDate": 1536850474000,
-      "endDate": 1537973674000,
+      "startDate": timestamp('01-10-19'),
+      "endDate":  null,
+      "isDraft": true,
       "position": 30
     }, {
       "id": 4,
@@ -65,8 +71,9 @@ export default {
       "ctaLabel": null,
       "ctaType": "series promo video",
       "ctaLink": "/video/61695/the-affair-same-mistakes",
-      "startDate": 1535900074000,
-      "endDate": 1537109674000,
+      "startDate": timestamp('01-05-19'),
+      "endDate":   timestamp('01-20-19'),
+      "isDraft": true,
       "position": 100
     }, {
       "id": 5,
@@ -78,8 +85,9 @@ export default {
       "ctaLabel": null,
       "ctaType": "bts video",
       "ctaLink": "/video/61947/the-affair-characters-helen-vik-and-noah",
-      "startDate": 1537023274000,
-      "endDate": 1537800874000,
+      "startDate": null,
+      "endDate":   timestamp('01-20-19'),
+      "isDraft": false,
       "position": 20
     }, {
       "id": 6,
@@ -91,8 +99,8 @@ export default {
       "ctaLabel": null,
       "ctaType": "series promo video",
       "ctaLink": "/video/62285/the-affair-series-recap",
-      "startDate": 1538452800000,
-      "endDate": 1539576000000,
+      "startDate": timestamp('01-19-19'),
+      "endDate":   timestamp('01-21-19'),
       "position": 50
     },{
       "id": 7,
@@ -104,8 +112,22 @@ export default {
       "ctaLabel": null,
       "ctaType": "series promo video",
       "ctaLink": "/video/62285/the-affair-series-recap",
-      "startDate": 1536764074000,
-      "endDate": 1537367164000,
+      "startDate": timestamp('01-10-19'),
+      "endDate":   timestamp('01-12-19'),
+      "isDraft": false,
+      "position": 50
+    },{
+      "id": 8,
+      "name": "Cantelope Penny Dread Season 2 TBT preview",
+      "title": "Cantelope Penny Dread Seasons 1-3 for TBT preview",
+      "subTitle": "Don't miss new episodes Sundays at 9PM ET/PT",
+      "smallImageUrl": "https://www.sho.com/site/image-bin/images/1031103_4_0/1031103_4_0_rcp01_640x360.jpg",
+      "imageUrl": "https://www.sho.com/site/image-bin/images/1031103_4_0/1031103_4_0_rcp01_640x360.jpg",
+      "ctaLabel": null,
+      "ctaType": "series promo video",
+      "ctaLink": "/video/62285/the-affair-series-recap",
+      "startDate": timestamp('01-10-19'),
+      "endDate":   timestamp('01-15-19'),
       "position": 50
     }]
   }

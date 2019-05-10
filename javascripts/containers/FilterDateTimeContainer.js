@@ -1,5 +1,6 @@
 import { connect, bindActionCreators } from 'react-redux';
 import { setFilters, unsetFilters, FILTER_TYPES } from '../redux/filters'
+import { setCurrentSelectedPageNumber } from '../redux/pagination'
 import FilterDateTime from '../components/FilterDateTime';
 import Promo from '../models/Promo'
 

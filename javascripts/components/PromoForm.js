@@ -1,70 +1,109 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
-import { TextInput, DateTimeInput, SelectInput, CheckboxInput } from './Forms'
-import { getValidator } from '../utils/validation'
 import Promo from '../models/Promo'
+import FormFactory from './forms/FormFactory'
+import FormConfig from './PromoFormConfig'
+import Buttons from './forms/Buttons'
+
+// get the element for wrapping inputs into sections
+const FormGroup = FormFactory.getFormGroupElement.bind(FormFactory)
+// parse the configuration for the form into a map where keys
+// are fieldNames and values are components suitable for rendering into the view
+// todo: should this be encapsulated in the Factory?
+const InputMap  = FormFactory.getInputMap(FormConfig)
+
+// get the validator function to pass to redux-form
+const validator = FormFactory.getValidator(['default',{'config':FormConfig}])
 
 class PromoForm extends Component {
-
   render(){
     const {
       id,
       isNew,
       name,
       ctaTypeOptions,
-      isDraft
+      isDraft,
+      openPicker,
+      closePicker,
+      datetimes
     } = this.props
+
     const {
       handleSubmit, 
       pristine, 
       submitting,
       change
+    } = this.props
+    
+    const {
+      detailsError,
+      detailsErrorMessages,
+      groupError,
+      groupErrorMessages
     } = this.props;
-
+    
     return (
       <form className="promo-form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-        <div className='promo-form-group promo-form-group--inline'>
+        {detailsError && detailsErrorMessages.length ? 
+          (<p className='promo-form__error-message'>
+            We were unable to save the promotion. Please check double check your input for errors and try again. If you continue to see the error please contact us at tools@showtime.net.<br />
+          </p>) : undefined
+        }
+
+        {groupError && groupErrorMessages.length ? 
+          (<p className='promo-form__error-message'>
+            There are issues with the fields below<br />
+            {groupErrorMessages.map((e,i) => <span key={i}>{e}<br /></span>)}
+          </p>) : undefined
+        }
+      
+        <FormGroup name='head' inline='true'>
           <span className='promo-form__input promo-list__item__column--window' 
-            data-promotional-window='disabled'
-          >
+            data-promotional-window='disabled'>
           </span>
-          <TextInput name='position'        inline={true} size={4} />
-          <TextInput name='name'            inline={true} required={true} />
-          <DateTimeInput name='startDate'  inline={true} resetValue={this.clearSection.bind(this)} />
-          <DateTimeInput name='endDate'    inline={true} resetValue={this.clearSection.bind(this)} />
+          {this.getGroupInputs('head', {
+            'inline'       : true, 
+            'resetValue'   : this.onCloseDateTimePicker.bind(this),
+            openPicker,
+            closePicker,
+            datetimes
+          })}
           <span className='promo-form__input promo-form__input--tools'></span>
-        </div>
-        <div className='promo-form-group form-group'>
-          <TextInput name='title'           required={true} />
-          <TextInput name='topLine'        />
-          <TextInput name='seriesId'       />
-          <TextInput name='seasonNumber'   />
-          <TextInput name='showId'         />          
-          <TextInput name='largeImageUrl' />
-          <TextInput name='smallImageUrl' />
-          {(ctaTypeOptions || []).length
-             ? <SelectInput name='ctaType' className='cta-type-dropdown' options={ctaTypeOptions}/> : 
-               <TextInput name='ctaType' /> }
-          <TextInput name='ctaLabel'       />
-          <TextInput name='ctaLink'        />
-        </div>
-        <div className='promo-form-group form-group'>
-          <a className='promo-form__button promo-form__button--cancel' href="#" onClick={this.onCancel.bind(this)}>
-            Cancel
-          </a>
-          <button className='promo-form__button promo-form__button--submit btn btn-primary' type="submit" disabled={pristine || submitting}>
-            Save
-          </button>
-          <div className='promo-form-group--is-draft'>
-            <CheckboxInput name="setDraftMode" label="Draft Mode" isDraft={isDraft}/>
+        </FormGroup>
+        <FormGroup name='body'>
+          {this.getGroupInputs('body', {ctaTypeOptions})}
+        </FormGroup>
+       <FormGroup name='footer'>
+         <div className="footer__left-buttons">
+           <Buttons.Cancel onClick={this.onCancel.bind(this)} />
           </div>
-        </div>        
-        {!isNew &&
-        <div className='promo-form__delete'>
-          <button className='promo-form__button promo-form__button--delete btn btn-danger' onClick={this.confirmDelete.bind(this)}>Delete</button>
-        </div>}
-      </form>
+          <Buttons.Save {...this.props} />
+         <FormGroup name='draft-mode'>
+           {this.getGroupInputs('footer', {isChecked: isDraft})}
+         </FormGroup>
+         {!isNew && <Buttons.Delete onClick={this.confirmDelete.bind(this)} />}
+       </FormGroup>
+     </form>
     )
+  }
+  
+  getGroupInputs(name, opts){
+    return (FormConfig[name].children || []).map(input => {
+      return this.getInput(input,opts)
+    })
+  }
+  
+  getInput(input, opts={}){
+    const Input = InputMap[input.name]
+    const optionsForSelect = input.inputType !== 'select' ? 
+      {} : {'options': (input.options || opts.ctaTypeOptions)}
+    ;
+    return <Input 
+      key={`input-${input.name}`} 
+      {...input} 
+      {...opts}
+      {...optionsForSelect}
+    />
   }
 
   onSubmit(attrs){
@@ -84,8 +123,10 @@ class PromoForm extends Component {
     let json = {...input};
     if(startDate) json.startDate = Promo.toTimestamp(startDate)
     if(endDate)   json.endDate   = Promo.toTimestamp(endDate)
-    json.isDraft                 = setDraftMode !== undefined ? setDraftMode : isDraft
 
+    // handle some weirdness w/ draft mode checkbox state
+    json.isDraft                 = setDraftMode !== undefined ? setDraftMode : isDraft
+    
     if(isNew){
       createPromo(json)
     } else {
@@ -98,17 +139,19 @@ class PromoForm extends Component {
   }
 
   confirmDelete(e){
-    if(confirm("Are you sure you want to delete this Promo Detail? This cannot be undone.")) {
+    e.preventDefault()
+    if(confirm("Are you sure you want to delete this Promotion? This cannot be undone.")) {
       const {deletePromo,id} = this.props
       deletePromo({id})
-    } else {
-      e.preventDefault()
-    }
+    } 
   }
 
-  clearSection(e, section){
+  onCloseDateTimePicker(e, field){
     e.preventDefault()
-    this.props.change(section, null)
+
+    this.props.unsetDatetime({field})
+    // this.props.change(field null) 
+    // moved to form-hooks middleware
   }
 }
 
@@ -116,5 +159,5 @@ export default reduxForm({
   form: 'promo',
   destroyOnUnmount: false,
   enableReinitialize: true,
-  validate: getValidator()
+  validate: validator
 })(PromoForm)

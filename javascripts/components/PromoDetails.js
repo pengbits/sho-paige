@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import PromoForm from '../containers/PromoFormContainer'
+import PromoForm from '../containers/PromoFormContainer';
+import PromoDetailsOutsideClick from "./PromoDetailsOutsideClick";
 
 class PromoDetails extends Component {
   
@@ -8,7 +9,7 @@ class PromoDetails extends Component {
       detailsId
     } = this.props
 
-    return <PromoForm />
+    return  <PromoDetailsOutsideClick><PromoForm /> </PromoDetailsOutsideClick>
   }
 
 }

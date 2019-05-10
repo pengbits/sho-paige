@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
-import { DateTimeWidget } from './Forms'
+import { DateTimeWidget } from './forms/DateTimeInput'
 
 class FilterDateTime extends Component {
 
@@ -14,7 +14,7 @@ class FilterDateTime extends Component {
       type // startDate || endDate
     } = this.props;
  
-    const placeholder = 'filter by '+(type.replace('Date',' date'))
+    const placeholder = type.charAt(0).toUpperCase() + type.slice(1).replace('Date',' Date') //ex. formats startDate to Start Date
     const dateTimeValue = Number(initialValues[type])
     return (
     <form className="filter__form filter__form--datetime" onSubmit={handleSubmit(this.onSubmit.bind(this))}>

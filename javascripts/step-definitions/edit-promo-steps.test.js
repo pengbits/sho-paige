@@ -8,14 +8,16 @@ import updatePromoMock from '../mocks/updatePromo'
 import getPromosMock from '../mocks/getPromos'
 
 // reducers
-import reducer, { 
-  setAttributes, SET_ATTRIBUTES,
-  selectPromo,   SELECT_PROMO,
-  editPromo,     EDIT_PROMO,
-  updatePromo,   UPDATE_PROMO,
-  toggleDetails, TOGGLE_DETAILS,
-  cancelEditing, CANCEL_EDITING
-} from '../redux/promos'
+import reducer from '../redux/promos'
+import { 
+  setAttributes,
+  selectPromo,
+  editPromo,
+  updatePromo,
+  toggleDetails,
+  cancelEditing,
+} from '../redux/promos/actions'
+import * as types from '../redux/promos/types'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -60,6 +62,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
     const id = afterState.selected;
     store.dispatch(editPromo({id}))
     afterState = resultingState(store, reducer, beforeState)
+    expect(afterState.isEditing).toBe(true)
     expect(afterState.details).toEqual(thePromo)
   }
   
@@ -113,8 +116,8 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
       return store.dispatch(updatePromo(theEdit))
       .then(() => {
         expectActions(store, [
-          `${UPDATE_PROMO}_PENDING`,
-          `${UPDATE_PROMO}_FULFILLED` 
+          `${types.UPDATE_PROMO}_PENDING`,
+          `${types.UPDATE_PROMO}_FULFILLED` 
         ])
       })
     });

@@ -11,7 +11,7 @@ class ContentBlockForm extends Component {
       contentBlockEdit,
       initialValues
     } = this.props;
-
+   
     if(contentBlockEdit){
       return this.renderForm()
     } else {
@@ -45,7 +45,7 @@ class ContentBlockForm extends Component {
           {<button 
             className='content-block__form__cancel' 
             onClick={this.cancel.bind(this)}>
-              x
+              &#215;
           </button>}
         </form>
       </div >
@@ -71,5 +71,6 @@ class ContentBlockForm extends Component {
 }
 
 export default reduxForm({
-  form: 'contentBlock'
+  form: 'contentBlock',
+  enableReinitialize: true //When set to true, the form will reinitialize every time the initialValues prop changes.
 })(ContentBlockForm)

@@ -8,14 +8,23 @@ import getContentBlock from '../mocks/getContentBlock'
 
 // reducers
 import rootReducer from '../redux'
-import reducer, {
+import reducer from '../redux/promos'
+
+import {
   clonePromo, 
-  createPromo,   CREATE_PROMO,
-  setAttributes, SET_ATTRIBUTES
-} from '../redux/promos'
+  createPromo,
+  setAttributes
+} from '../redux/promos/actions'
+
+import {
+  SET_ATTRIBUTES,
+  CREATE_PROMO
+} from '../redux/promos/types'
+
 import {
   APPLY_SORT 
 } from '../redux/sort'
+
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -42,6 +51,7 @@ defineFeature(
   let store
   let state
   let thePromo
+  let theClone
   let attrs
   let response
   let action
@@ -127,49 +137,30 @@ defineFeature(
     });
   });
   
+  const serializeDates = (json) => {
+    return ['startDate','endDate'].reduce((data,key) => {
+        data[key] = Promo.toTimestamp(Promo.parseDate(json[key]))
+      return data
+    },{})
+  }
   
-  test('Clone a Promo with Offset Duration', ({ given, when, then, pending }) => {
-    given('there is a list of Promos', () => {
-      given_there_is_a_list_of_promos()
-    });
-  
-    when('I clone a promo with \'offset-duration=true\'', () => {
-      when_i_clone_a_promo({offsetDuration:true})
-    });
-  
-    when('I submit', () => {
-      const p = Promo.fromAttributes(thePromo)
-      const {startDate,endDate} = p.getOffsetDuration()
-
-      create_promo_copy(startDate, endDate)
-      response = {
-        payload: attrs
-      }
-      return when_i_submit(response)
-        .then(()=>{
-          expectActions(store, [
-            SET_ATTRIBUTES,
-            `${CREATE_PROMO}_PENDING`,
-            `${CREATE_PROMO}_FULFILLED`,
-            APPLY_SORT
-          ])
-        })
-    });
-  
-    then('the list contains a copy of the promo with \'(Copy 1)\' in the title and the offset duration', () => {
-      const {list}    = resultingState(store, reducer, state)
-      const duration  = Promo.fromAttributes(thePromo).duration()
-      const startDate = (thePromo.startDate + duration)
-      const endDate   = (thePromo.endDate   + duration)
-      const expected  = {...response.payload, 
-        startDate, 
-        endDate
-      }
-      expect(list).toEqual(expect.arrayContaining([expected]))
+  test('Clone a Promo with Offset Duration Ray Next-Ons', ({ given, when, then,  }) => {
+    given('there is a promo with these attributes', (json) => {
+      attrs = serializeDates(JSON.parse(json))
+      thePromo = Promo.fromAttributes(attrs)
     })
-  })
-  
-  
+
+    when('I clone it with \'offset-duration=true\'', () => {
+      theClone = thePromo.clone({'offsetDuration':true})
+    })
+
+    then('the clone will have these attributes', (json) => {
+      attrs = JSON.parse(json)
+      expect(attrs.startDate).toEqual(Promo.toDateStr(theClone.getStartDate()))
+      expect(attrs.endDate).toEqual(Promo.toDateStr(theClone.getEndDate()))
+    })
+  });
+
   test('Cloning a Promo with Offset Duration is not allowed without Start and End Dates', ({ given, when, then, pending }) => {
     given('there is a list of Promos', () => {
       given_there_is_a_list_of_promos()

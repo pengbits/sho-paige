@@ -14,6 +14,10 @@ export default {
   "previousPage": null,
   "page": {
     "content": [{
+      "contentBlock":[{
+        "context":{
+          "name": "Alpha Dreadful Series Site"
+          }}],
       "id": 1,
       "name": "The Affair Season 4 Lookahead",
       "title": "Find out what's ahead on Season 4",
@@ -27,6 +31,10 @@ export default {
       "endDate": "07-15-2018",
       "position": 20
     }, {
+      "contentBlock":[{
+        "context":{
+          "name": "Beta Dreadful Series Site"
+          }}],
       "id": 2,
       "name": "The Affair 401 Preview",
       "title": "Watch a preview of Season 4",
@@ -41,6 +49,10 @@ export default {
       "position": 10
 
     }, {
+      "contentBlock":[{
+        "context":{
+          "name": "Zeta Dreadful Series Site"
+          }}],
       "id": 3,
       "name": "The Affair Season 4 Character Focus - Allison and Cole",
       "title": "Alison and Cole in Season 4",
@@ -55,6 +67,10 @@ export default {
       "position": 30
 
     }, {
+      "contentBlock":[{
+        "context":{
+          "name": "Ray Dreadful Series Site"
+          }}],
       "id": 4,
       "name": "The Affair Season 4 Same Mistakes Spot",
       "title": "Check out a preview of Season 4",
@@ -69,6 +85,10 @@ export default {
       "position": 100
 
     }, {
+      "contentBlock":[{
+        "context":{
+          "name": "Theta Dreadful Series Site"
+          }}],
       "id": 5,
       "name": "The Affair Season 4 Character Focus - Noah and Vik",
       "title": "Find out how Noah really feels about Vik",
@@ -83,6 +103,10 @@ export default {
       "position": 20
 
     }, {
+      "contentBlock":[{
+        "context":{
+          "name": "1Jodie Dreadful Series Site"
+          }}],
       "id": 6,
       "name": "The Affair Season 1-3 Recap",
       "title": "Catch Up on Seasons 1-3 of The Affair in 30 seconds",

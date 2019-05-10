@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import App from '../components/App';
-import { newPromo } from '../redux/promos'
+import { newPromo } from '../redux/promos/actions'
 import { setConfig } from '../redux/configs'
 import { setContext } from '../redux/app'
 import { setContentBlock } from '../redux/content-block'
@@ -15,10 +15,15 @@ const mapStateToProps = (state) => {
     context
   } = state.app
   
+  const {
+    isEditing
+  } = state.promos
+  
   return {
     contentBlock,
     search,
-    context
+    context,
+    isEditing
   }
 }
 

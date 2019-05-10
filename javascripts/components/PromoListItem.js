@@ -11,11 +11,13 @@ class PromoListItem extends Component {
       startDate,
       endDate,
       highlighted,
-      status
+      status,
+      displayContextName,
+      displayContentBlockName
     } = this.props
-    
+
     const isHighlighted = (id == highlighted)
-    
+
     return (
       <div className={`promo-list__item ${isHighlighted ? 'promo-list__item--highlighted' : ''}`}>
         <span className='promo-list__item__column promo-list__item__column--window' 
@@ -26,6 +28,11 @@ class PromoListItem extends Component {
         <span className='promo-list__item__column promo-list__item__column--position'>
           {position}
         </span>
+        {displayContextName &&
+          <span className='promo-list__item__column promo-list__item__column--context'>
+          <p>{displayContextName}</p><p>{displayContentBlockName}</p>
+        </span>
+        }
         <span className='promo-list__item__column promo-list__item__column--name'>
           {name}
         </span>

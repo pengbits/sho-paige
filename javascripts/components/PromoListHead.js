@@ -3,26 +3,27 @@ import {hyphenize,camelize} from '../utils/string'
 import cn from 'classnames'
 import $ from 'jquery'
 
+const COLUMNS_FOR_SEARCH        = ['window','position','context','name', 'start-date', 'end-date', 'tools']
+const COLUMNS_FOR_CONTENT_BLOCK = ['window','position',          'name', 'start-date', 'end-date', 'tools'] 
+
 class PromoListHead extends Component {
   render(){
     const {
       currentSortType,
       currentSortDirection,
-      isAscending
+      isAscending,
+      isSearchContext
     } = this.props
     
+    const promoListHeadArray = isSearchContext ? 
+      COLUMNS_FOR_SEARCH : COLUMNS_FOR_CONTENT_BLOCK;
+
     return (
-      <div className='promo-list__item promo-list__item--head'
+      <div className='promo-list__item promo-list__item--head' 
         onClick={this.onColumnClick.bind(this)}
       >
-      {[
-        'window',
-        'position',
-        'name',
-        'start-date',
-        'end-date',
-        'tools'
-      ].map(name => { 
+      
+      {promoListHeadArray.map(name => { 
         return this.renderColumn({
           isShim : /window|tools/.test(name),
           active : camelize(name) == currentSortType,
@@ -41,9 +42,10 @@ class PromoListHead extends Component {
         className={cn(
             'promo-list__item__column',
             'promo-list__item__column--' + name,
+            'promo-list__item__column--header',
           { 'promo-list__item__column--active' : active })
         }>
-        {!isShim && name.replace('-',' ') }
+        {!isShim && name.replace('-',' ').toUpperCase() }
         {!isShim && active && <i className={cn(
           'promo-list__item__sort-direction-icon',
           'fa',

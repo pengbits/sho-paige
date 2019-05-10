@@ -1,13 +1,17 @@
 import { connect, bindActionCreators } from 'react-redux';
 import { 
-  showDetails,
+  selectPromo,
   editPromo, 
+  showDetails,
   clonePromo, 
   cloneWithDurationPromo, 
-  deletePromo,
+  deletePromo
+} from '../redux/promos/actions'
+
+import {
   OPTIONS_FOR_CONTEXT,
   OPTIONS_DISABLED_UNLESS
-} from '../redux/promos'
+} from '../redux/promos/utils'
 
 import PromoTools from '../components/PromoTools';
 
@@ -27,6 +31,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     editPromo: function({id}){
+      dispatch(selectPromo({id}))
       dispatch(editPromo({id}))
       dispatch(showDetails())
     },

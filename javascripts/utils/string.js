@@ -1,7 +1,7 @@
 // this assumes space-delimmed input like 'start date'
 // and returns the camel-cased equivalent: 'startDate'
 
-export const camelize = function(str) {
+export const camelize = function(str='') {
   return str.replace(/\W+(.)/g, function(match, chr){
     return chr.toUpperCase();
   });
@@ -9,7 +9,7 @@ export const camelize = function(str) {
 
 // convert camel-case to space-deliminated
 // 'startDate' => 'start date'
-export const humanize = function(str){
+export const humanize = function(str=''){
   return str.replace(/[A-Z]+/g,function(match){
     return ' '+ match.toLowerCase()
   });
@@ -17,8 +17,13 @@ export const humanize = function(str){
 
 // change spaces to hyphens and downcase
 // 'wibble Boss' => 'wibble-boss'
-export const hyphenize = function(str) {
+export const hyphenize = function(str='') {
   return str.replace(/\W+(.)/g, function(match, chr){
     return '-' + chr.toLowerCase()
   });
+}
+
+
+export const capitalize  = function(name) {
+  return name[0].toUpperCase() + name.substr(1)
 }

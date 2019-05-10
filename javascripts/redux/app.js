@@ -24,7 +24,9 @@ export const app = (state={}, action={}) => {
       }
       return {
         ...state,
-        context
+        context,
+        isContentBlockContext : (context == CONTENT_BLOCK_CONTEXT),
+        isSearchContext : (context == SEARCH_CONTEXT)
       }
       
     default:

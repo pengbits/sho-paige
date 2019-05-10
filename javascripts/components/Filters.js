@@ -9,14 +9,16 @@ export default () => {
   }
   
   return (<div className="filters">
-    <div className='filter filter--start-date'>
-      <FilterDateTime type='startDate' />
-    </div>
-    <div className='filter filter--end-date'>
-      <FilterDateTime type='endDate' />
-    </div>
-    <div className='filter filter--search-term'>
-      <FilterSearchBox />
-    </div>
-  </div>)
+      <i className="fa fa-filter"></i>
+      <div className='filter filter--start-date'>
+        <FilterDateTime type='startDate' />
+      </div>
+      <div className='filter filter--end-date'>
+        <FilterDateTime type='endDate' />
+      </div>
+      <div className='filter filter--search-term'>
+        <FilterSearchBox />
+      </div>
+  </div>
+  )
 }

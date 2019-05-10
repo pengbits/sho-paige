@@ -6,8 +6,10 @@ import mockStore, { expectActions, resultingState, respondWithMockResponse} from
 import getContentBlockMock from '../mocks/getContentBlock'
 
 // reducers
-import rootReducer from '../redux'
-import reducer, { getPromos, GET_PROMOS } from '../redux/promos'
+import rootReducer   from '../redux'
+import reducer       from '../redux/promos/reducers'
+import {getPromos}   from '../redux/promos/actions'
+import {GET_PROMOS}  from '../redux/promos/types'
 import appReducer, { setContext, CONTENT_BLOCK_CONTEXT } from '../redux/app'
 import {APPLY_SORT } from '../redux/sort'
 

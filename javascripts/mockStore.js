@@ -1,14 +1,16 @@
 import promiseMiddleware from 'redux-promise-middleware'
 import thunk from 'redux-thunk'
 import configureStore from 'redux-mock-store'
-import FormHooksMiddleware from './form-hooks-middleware'
-import FilterPromosMiddleware from './filter-promos-middleware'
-import SortMiddleware from './sort-middleware'
+import FormHooksMiddleware from './middleware/form-hooks-middleware'
+import FilterPromosMiddleware from './middleware/filter-promos-middleware'
+import SortMiddleware from './middleware/sort-middleware'
+import PaginationMiddleware from './middleware/pagination-middleware'
 
 const middlewares = [
   FormHooksMiddleware,
   FilterPromosMiddleware,
   SortMiddleware,
+  PaginationMiddleware,
   promiseMiddleware(),
   thunk.withExtraArgument({'isRootReducer': false})
 ]

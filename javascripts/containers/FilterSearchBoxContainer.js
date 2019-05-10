@@ -1,5 +1,6 @@
 import { connect, bindActionCreators } from 'react-redux';
 import { setFilters, unsetFilters, FILTER_TYPES } from '../redux/filters'
+import { setPageNumber } from '../redux/pagination'
 import FilterSearchBox from '../components/FilterSearchBox';
 
 const SEARCHBOX_FILTER_TYPE = 'text'
@@ -27,12 +28,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       }]
 
       dispatch(setFilters(filters))
+      // dispatch(setPageNumber({pageNumber: 1}))
     },
     
     unsetFilters: function(){
       dispatch(unsetFilters({
         type:SEARCHBOX_FILTER_TYPE
       }))
+      // dispatch(setPageNumber({pageNumber: 1}))
     } 
   }
 }

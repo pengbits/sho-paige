@@ -10,21 +10,20 @@ class FilterSearchBox extends Component {
       handleSubmit,
       search
     } = this.props;
-    
     return (
-    <form className="filter__form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+    <form className="filter__form filter__form--search-term "  onSubmit={handleSubmit(this.onSubmit.bind(this))}>
       <Field 
         component='input' 
-        className='filter__input form-control' 
+        className={'filter__input form-control form-control--search-term' + (this.props.search ? ' filter__input--show-icon' : "")}
         name='search' 
-        placeholder="filter by text"
+        placeholder="Text"
         onChange={this.onChange.bind(this)}
       />
       {!!search && <button 
         className='filter__cancel' 
         type="button"
         onClick={this.clear.bind(this)}>
-          x
+          &#215;
       </button>}
     </form>
     )

@@ -8,11 +8,14 @@ import {
 import PromoListHead from '../components/PromoListHead';
 
 const mapStateToProps = (state) => {
-  const {type,direction} = state.sort
+  const {type,direction}  = state.sort
+  const {isSearchContext} = state.app
+
   return {
     currentSortType : type,
     currentSortDirection : direction,
-    isAscending : (direction == SORT_DIRECTION_ASC)
+    isAscending : (direction == SORT_DIRECTION_ASC),
+    isSearchContext
   }
 }
 

@@ -10,9 +10,12 @@ import searchQueryMock from '../mocks/searchQueryMock'
 
 // reducers
 import rootReducer from '../redux'
-import reducer, { getPromos, GET_PROMOS } from '../redux/promos'
+import reducer from '../redux/promos/reducers'
+import {getPromos} from '../redux/promos/actions'
+import * as types from '../redux/promos/types'
 import appReducer, { setContext, SEARCH_CONTEXT } from '../redux/app'
 import {APPLY_SORT } from '../redux/sort'
+import {SET_TOTAL_RESPONSE_PAGES, SET_RESPONSE_SIZE} from '../redux/pagination'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -60,14 +63,16 @@ defineFeature(
     
     when('I load the search endpoint', () => {
       respondWithMockResponse(moxios, searchQueryMock)
-      
+
       store = mockStore(afterState)
       return store.dispatch(getPromos())
       .then(() => {
         
         expectActions(store, [
-          `${GET_PROMOS}_PENDING`,
-          `${GET_PROMOS}_FULFILLED`,
+          `${types.GET_PROMOS}_PENDING`,
+          SET_TOTAL_RESPONSE_PAGES,
+          SET_RESPONSE_SIZE,
+          `${types.GET_PROMOS}_FULFILLED`,
           APPLY_SORT
         ])  
       })
@@ -117,8 +122,10 @@ defineFeature(
       .then(() => {
         
         expectActions(store, [
-          `${GET_PROMOS}_PENDING`,
-          `${GET_PROMOS}_FULFILLED`,
+          `${types.GET_PROMOS}_PENDING`,
+          SET_TOTAL_RESPONSE_PAGES,
+          SET_RESPONSE_SIZE,
+          `${types.GET_PROMOS}_FULFILLED`,
           APPLY_SORT
         ])  
       })

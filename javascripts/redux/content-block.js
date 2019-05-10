@@ -1,5 +1,6 @@
 import { createAction } from 'redux-actions';
-import axios from 'axios';
+import AxiosWrapper from '../utils/axios'
+ const axios = () => AxiosWrapper.instance()
 
 export const SET_CONTENT_BLOCK    = 'content-block/SET_CONTENT_BLOCK'
 export const RENAME_CONTENT_BLOCK = 'content-block/RENAME_CONTENT_BLOCK'
@@ -31,7 +32,7 @@ export const updateContentBlock = (data) => {
   
   return {
     type: UPDATE_CONTENT_BLOCK,
-    payload: axios.put(url, data)
+    payload: axios().put(url, data)
     .then(xhr => xhr.data)
     .catch(e => e)
   }

@@ -40,6 +40,7 @@ class App extends Component {
     <article className="paige-app">
       <Header 
         addPromo={this.props.addPromo}
+       isEditing={this.props.isEditing}
          context={this.props.context}
       />
       <section className="paige-app__body">

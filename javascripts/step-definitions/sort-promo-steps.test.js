@@ -9,8 +9,8 @@ const ContentBlock = getContentBlock.payload
 // reducers
 import rootReducer from '../redux'
 import { CONTENT_BLOCK_CONTEXT } from '../redux/app'
-import { setSort, SORT_DIRECTION_ASC, SORT_DIRECTION_DSC } from '../redux/sort'
-import { GET_PROMOS } from '../redux/promos'
+import { setSort, toggleSortDirection, SORT_DIRECTION_ASC, SORT_DIRECTION_DSC } from '../redux/sort'
+import { GET_PROMOS } from '../redux/promos/types'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -68,17 +68,33 @@ import {trace} from '../step-definition-utils'
     }
          
     test('Sort by Name', ({ given, when, then, pending }) => {
-      given('there is a list of Promos', () => given_there_is_a_list_of_promos())
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
   
       when('I set the sort type to "name"', () => {
         store.dispatch(setSort({'type':'name'}))
         afterState = resultingState(store, rootReducer, beforeState)
         expect(afterState.sort.type).toEqual('name')
-      })    
+      })     
   
       then('the response will contain promos sorted alphabetically by "name"', () => {
         the_response_will_contain_promos({
           attr: 'name', direction: 'ascending', type: 'alpha'
+        })
+      })
+    });    
+
+    test('Sort by Context', ({ given, when, then, pending }) => {
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
+  
+      when('I set the sort type to "context"', () => {
+        store.dispatch(setSort({'type':'context'}))
+        afterState = resultingState(store, rootReducer, beforeState)
+        expect(afterState.sort.type).toEqual('context')
+      })     
+  
+      then('the response will contain promos sorted alphabetically by "context"', () => {
+        the_response_will_contain_promos({
+          attr: 'context', direction: 'ascending', type: 'alpha'
         })
       })
     });    
@@ -111,7 +127,7 @@ import {trace} from '../step-definition-utils'
         expect(sort.direction).toEqual(SORT_DIRECTION_DSC)
         
         the_response_will_contain_promos({
-          attr: 'position', direction: 'descending', type: 'number', logging:true
+          attr: 'position', direction: 'descending', type: 'number'
         })
         
       });
@@ -119,7 +135,7 @@ import {trace} from '../step-definition-utils'
 
 
     test('Sort by Position Descending', ({ given, when, then, pending }) => {
-      given('there is a list of Promos', () => given_there_is_a_list_of_promos())
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
   
       when('I set the sort type to "position" and order to "descending"', () => {
         store.dispatch(setSort({'type':'position', 'direction': SORT_DIRECTION_DSC}))
@@ -136,7 +152,7 @@ import {trace} from '../step-definition-utils'
     }) 
 
     test('Sort by Start Date', ({ given, when, then, pending }) => {
-      given('there is a list of Promos', () => given_there_is_a_list_of_promos())
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
   
       when('I set the sort type to "startDate"', () => {
         store.dispatch(setSort({'type':'startDate'}))
@@ -152,7 +168,7 @@ import {trace} from '../step-definition-utils'
     })
 
     test('Sort by Start Date Descending', ({ given, when, then, pending }) => {
-      given('there is a list of Promos', () => given_there_is_a_list_of_promos())
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
   
       when('I set the sort type to "startDate" and order to "descending"', () => {
         store.dispatch(setSort({'type':'startDate', 'direction':SORT_DIRECTION_DSC}))
@@ -168,7 +184,7 @@ import {trace} from '../step-definition-utils'
     })
 
     test('Sort by End Date', ({ given, when, then, pending }) => {
-      given('there is a list of Promos', () => given_there_is_a_list_of_promos())
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
   
       when('I set the sort type to "endDate"', () => {
         store.dispatch(setSort({'type':'endDate'}))
@@ -184,7 +200,7 @@ import {trace} from '../step-definition-utils'
     })
   
     test('Sort by End Date Descending', ({ given, when, then, pending }) => {
-      given('there is a list of Promos', () => given_there_is_a_list_of_promos())
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
   
       when('I set the sort type to "endDate" and order to "descending"', () => {
         store.dispatch(setSort({'type':'endDate', 'direction':SORT_DIRECTION_DSC}))
@@ -198,4 +214,40 @@ import {trace} from '../step-definition-utils'
         })
       })
     })
+    
+    test('Sort by name Descending, then Ascending', ({ given, when, then }) => {
+      given('there is a list of Promos', given_there_is_a_list_of_promos)
+
+      when('I set the sort type to "name"', () => {
+        store.dispatch(setSort({'type':'name'}))
+        afterState = resultingState(store, rootReducer, beforeState)
+        expect(afterState.sort.type).toEqual('name')
+        expect(afterState.sort.direction).toEqual(SORT_DIRECTION_DSC) 
+        // carried over from default state set defined in store initialization above   
+      })     
+      
+      then('the response will contain promos sorted alphabetically by "name" in descending order', () => {
+        the_response_will_contain_promos({
+          attr: 'name', 
+          direction: 'ascending', 
+          type: 'alpha'
+        })
+      })
+      
+      when('I set the sort type to "name" again', () => {
+        store = mockStore(afterState)
+        store.dispatch(toggleSortDirection())
+        afterState = resultingState(store, rootReducer, afterState)
+        expect(afterState.sort.direction).toEqual(SORT_DIRECTION_ASC) // carry over from default state      
+      })     
+
+      then('the response will contain promos sorted alphabetically by "name" in ascending order', () => {
+        the_response_will_contain_promos({
+          attr: 'name', 
+          direction: 'ascending', 
+          type: 'alpha'
+        })
+      })
+    })
+  
   })

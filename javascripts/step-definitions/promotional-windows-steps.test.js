@@ -8,10 +8,9 @@ import mockStore, { expectActions, resultingState } from '../mockStore'
 import getContentBlock from '../mocks/getContentBlock'
 
 // reducers
-import reducer, {
-  setAttributes
-} from '../redux/promos'
-
+import reducer from '../redux/promos'
+import {setAttributes} from '../redux/promos/actions'
+ 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
 
@@ -47,6 +46,10 @@ defineFeature(
   
   const given_current_datetime_is = (dateStr) => {
     current = Promo.parseDate(dateStr) 
+  }
+
+  const given_promotion_is_a_draft = () => {
+    beforeState.details.isDraft = true; 
   }
   
   const when_i_apply_these_dates = (startDateStr,endDateStr) => {
@@ -111,7 +114,17 @@ defineFeature(
       expect(promo.window({dateTime: current}).upcoming).toEqual(true)
     })
   })
-  
-  
+   
+  test('Promotion is draft', ({ given, when, then}) => {
+    given('there is a Promotion',         given_there_is_a_promotion)    
+    given ('Promotion is a draft', given_promotion_is_a_draft)
+    given(/^current datetime is '(.+)'$/, given_current_datetime_is)
+    when(/^I apply these dates 'startDate:(.+),endDate:(.+)'$/, when_i_apply_these_dates)
+
+    then('the Promotion is draft', () => {
+      promo = Promo.fromAttributes(afterState.details)
+      expect(promo.window({dateTime: current}).draft).toEqual(true)
+    })
+  })
 
 })

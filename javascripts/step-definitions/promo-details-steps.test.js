@@ -6,11 +6,12 @@ import mockStore, { expectActions, resultingState, respondWithMockResponse} from
 
 // reducers
 import rootReducer from '../redux'
-import reducer, {
+import reducer from '../redux/promos'
+import {
   toggleDetails,
   showDetails,
   hideDetails
-} from '../redux/promos'
+} from '../redux/promos/actions'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';

@@ -16,11 +16,13 @@ import reducer, {
   UPDATE_CONTENT_BLOCK
 } from '../redux/content-block'
 
-import promoReducer, {
-  setAttributes, SET_ATTRIBUTES,
-  editPromo, EDIT_PROMO,
+import promoReducer from '../redux/promos' 
+import {
+  setAttributes,
+  editPromo,
   clonePromo
-} from '../redux/promos'
+} from '../redux/promos/actions'
+import * as types from '../redux/promos/types'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -98,7 +100,7 @@ defineFeature(
     });
 
     then('the Promo Details will include a Content Block Id', () => {  
-      expectActions(store, [SET_CONTENT_BLOCK, SET_ATTRIBUTES, EDIT_PROMO])
+      expectActions(store, [SET_CONTENT_BLOCK, types.SET_ATTRIBUTES, types.EDIT_PROMO])
       expect(afterState.promos.details.contentBlockId).toEqual(ContentBlockMock.id)
     });
   });

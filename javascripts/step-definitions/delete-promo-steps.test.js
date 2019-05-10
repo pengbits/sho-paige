@@ -10,11 +10,13 @@ import deletePromoMock from '../mocks/deletePromoMock'
 // reducers
 import rootReducer from '../redux' 
 // reducers 
-import reducer, { 
-  setAttributes, SET_ATTRIBUTES,
-  selectPromo,   SELECT_PROMO,
-  deletePromo,   DELETE_PROMO,
-} from '../redux/promos'
+import reducer from '../redux/promos'
+import { 
+  setAttributes,
+  selectPromo,
+  deletePromo,
+} from '../redux/promos/actions'
+import * as types from '../redux/promos/types'
 
 // settings
 const PAIGE_ROOT = './library/javascripts/tools/paige';
@@ -74,8 +76,8 @@ defineFeature(
       return store.dispatch(deletePromo({id: thePromo.id}))
        .then(() => {
          expectActions(store, [
-          `${DELETE_PROMO}_PENDING`,
-          `${DELETE_PROMO}_FULFILLED`
+          `${types.DELETE_PROMO}_PENDING`,
+          `${types.DELETE_PROMO}_FULFILLED`
          ])
          afterState = resultingState(store, reducer, store.getState())
        })
@@ -112,8 +114,8 @@ defineFeature(
       return store.dispatch(deletePromo({id: thePromo.id}))
       .then(() => {
         expectActions(store, [
-          `${DELETE_PROMO}_PENDING`,
-          `${DELETE_PROMO}_FULFILLED`
+          `${types.DELETE_PROMO}_PENDING`,
+          `${types.DELETE_PROMO}_FULFILLED`
         ])
         afterState = resultingState(store, reducer, store.getState())
       })
