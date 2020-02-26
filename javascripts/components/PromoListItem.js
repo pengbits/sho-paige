@@ -13,11 +13,13 @@ class PromoListItem extends Component {
       highlighted,
       status,
       displayContextName,
-      displayContentBlockName
+      displayContentBlockName,
+      editorPath
     } = this.props
 
-    const isHighlighted = (id == highlighted)
-
+    const isHighlighted   = (id == highlighted)
+    const ContextLink     = (displayContextName && editorPath) ? 'a' : 'span'
+    
     return (
       <div className={`promo-list__item ${isHighlighted ? 'promo-list__item--highlighted' : ''}`}>
         <span className='promo-list__item__column promo-list__item__column--window' 
@@ -30,7 +32,11 @@ class PromoListItem extends Component {
         </span>
         {displayContextName &&
           <span className='promo-list__item__column promo-list__item__column--context'>
-          <p>{displayContextName}</p><p>{displayContentBlockName}</p>
+          <ContextLink className='promo-list__item__context-link' 
+            href={editorPath}>
+              <u className='promo-list__item__context-link__context'>{displayContextName}</u>
+              <u className='promo-list__item__context-link__content-block'>{displayContentBlockName}</u>
+          </ContextLink>
         </span>
         }
         <span className='promo-list__item__column promo-list__item__column--name'>

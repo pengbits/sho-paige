@@ -17,6 +17,7 @@ import {getPromos}  from '../redux/promos/actions'
 import {GET_PROMOS} from '../redux/promos/types'
 
 const PaginationMiddleware = store => next => action => {
+  // console.log(action)
   if(typeof action =='object'){
     
     let meta
@@ -57,8 +58,12 @@ const PaginationMiddleware = store => next => action => {
         return next(action)
       
       default:
-        return next(action)
-    }  
+        if(action.type) {
+          return next(action)
+        } else {
+          console.log(action)
+        }  
+    }
     
   } else {
     return next(action)

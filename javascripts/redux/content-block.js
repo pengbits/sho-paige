@@ -2,16 +2,17 @@ import { createAction } from 'redux-actions';
 import AxiosWrapper from '../utils/axios'
  const axios = () => AxiosWrapper.instance()
 
-export const SET_CONTENT_BLOCK    = 'content-block/SET_CONTENT_BLOCK'
-export const RENAME_CONTENT_BLOCK = 'content-block/RENAME_CONTENT_BLOCK'
-export const UPDATE_CONTENT_BLOCK = 'content-block/UPDATE_CONTENT_BLOCK'
-export const EDIT_CONTENT_BLOCK = 'content-block/EDIT_CONTENT_BLOCK'
+// constants
+export const SET_CONTENT_BLOCK      = 'content-block/SET_CONTENT_BLOCK'
+export const RENAME_CONTENT_BLOCK   = 'content-block/RENAME_CONTENT_BLOCK'
+export const UPDATE_CONTENT_BLOCK   = 'content-block/UPDATE_CONTENT_BLOCK'
+export const EDIT_CONTENT_BLOCK     = 'content-block/EDIT_CONTENT_BLOCK'
 export const CANCEL_EDITING_CONTENT_BLOCK = 'content-block/CANCEL_EDITING_CONTENT_BLOCK'
 
+// action creators
 export const cancelEditingContentBlock = createAction(CANCEL_EDITING_CONTENT_BLOCK)
 export const setContentBlock = createAction(SET_CONTENT_BLOCK)
 export const editContentBlock = createAction(EDIT_CONTENT_BLOCK)
-
 export const renameContentBlock = ({name}) => {
   return (dispatch, getState, opts) => {
     const attrs = getState().contentBlock;
@@ -38,6 +39,17 @@ export const updateContentBlock = (data) => {
   }
 }
 
+
+// selectors/utils
+// this is used as a store for the form defaults...
+// but it's not great since there is an existing property with this name,
+// the difference being it contains a database id as part of the value, and is therefor not predictable,
+// so can't be used for configured defaults (where we want the same rules to apply across every instance of 'recaps', not just 'billions recaps', for example)
+export const getKeyFromContentBlock = (state=initialState) => {
+   return (state.name || '').toLowerCase().replace(' ','-')
+}
+
+// reducer
 export const initialState = {
   id: undefined,
   name: undefined,
@@ -67,14 +79,15 @@ export const contentBlock = (state=initialState, action={}) => {
       const {
         id,
         name,
-        contextId
+        contextId,
+        contentBlockKey
       } = action.payload
-      
       return {
         ...state,
         id,
         name,
         contextId,
+        contentBlockKey,
         isEditing: false
       }
       

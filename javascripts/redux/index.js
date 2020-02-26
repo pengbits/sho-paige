@@ -9,7 +9,9 @@ import { sort } from './sort'
 import { promos } from './promos/reducers'
 import { configs } from './configs'
 import { contentBlock} from './content-block'
+import { contentBlocks } from './content-blocks'
 import { formDefaults } from './form-defaults'
+import { hunter } from './hunter-adapter'
 import { app } from './app'
 import crossCuttingReducer from './cross-cutting-reducer'
 
@@ -20,9 +22,11 @@ export const indexReducer = {
   search,
   promos,
   contentBlock,
+  contentBlocks,
   sort,
   formDefaults,
   app,
+  hunter,
   datetimes
 }
 

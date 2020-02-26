@@ -1,4 +1,5 @@
-Scenario: Render Image as ImagePath
+Feature: Form Types
+  Scenario: Render Image as ImagePath
   Given this input
   """
   {
@@ -6,6 +7,7 @@ Scenario: Render Image as ImagePath
     "dataType"  : "text",
     "inputType" : "imagePath",
     "input" : {
+      "name"  : "largeImageURL",
       "value" : "https://www.sho.com/site/image-bin/images/1033342_1_0/1033342_1_0_prm-keyart_568x426.jpg"
     } 
   }
@@ -13,17 +15,26 @@ Scenario: Render Image as ImagePath
   When I render it
   Then it has this structure
   """
-  <div className="promo-form__input promo-form__input--text promo-form__input--image-path promo-form__input--large-image-url">
+  <div className="promo-form__input promo-form__input--image-path promo-form__input--text promo-form__input--large-image-url">
     <label htmlFor="largeImageURL">
-      position
+      largeImageURL
     </label>
     <input
-      name="form__input"
+      name="largeImageURL"
       type="text"
       value="https://www.sho.com/site/image-bin/images/1033342_1_0/1033342_1_0_prm-keyart_568x426.jpg"
     />
-    <div class="image-validator image-validator--success">
-      <span class="image-validator__status">√</span> 
-    </div>
+    <span className="promo-form__image-actions">
+      <Connect(ImageHunter) name="largeImageURL" />
+      <ImagePreview
+        error={undefined}
+        imagePathStatus={null}
+        src="https://www.sho.com/site/image-bin/images/1033342_1_0/1033342_1_0_prm-keyart_568x426.jpg"
+      />
+      <ImagePathValidator
+        error={undefined}
+        imagePathStatus={null}
+      />
+    </span>
   </div>
   """

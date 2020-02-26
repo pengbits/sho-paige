@@ -9,6 +9,7 @@ import { Checkbox } from './Checkbox'
 import { DateTimeInput } from './DateTimeInput'
 import { humanize } from '../../utils/string'
 import { getValidator } from '../../utils/validation'
+import FormConfigs from '../form-configs'
 
 // this is our list of input types.. the types are the keys and the values are the component classes
 // it's ok to re-use the input types, as the disntinction might just be around attributes + classNames
@@ -20,6 +21,7 @@ const INPUT_MAP = {
   'textArea'  : TextArea,
   'checkbox'  : Checkbox,
   'datetime'  : DateTimeInput,
+  'readOnlyText' : TextInput
 }
 
 export const FORM_SECTIONS = ['head','body','footer']
@@ -27,6 +29,10 @@ export const FORM_SECTIONS = ['head','body','footer']
 let fieldMap;
 
 class FormFactory {
+  constructor(cfg){
+    // console.log(`hello from FormFactory context:'${cfg.context}'`)
+  }
+  
   getInput({name,dataType,inputType,required}){
     if(!INPUT_MAP[inputType]) {
       throw new Error(`unknown inputType: '${inputType}'`)
@@ -91,10 +97,24 @@ class FormFactory {
     return map
   }
   
+  getConfig({context}){
+    if(context && FormConfigs[context]) {
+      // console.log(`FormFactory#getConfig found custom context: '${context}'`)
+      return FormConfigs[context]
+    } else {
+      // console.log(`FormFactory#getConfig using default for '${context}'`)
+      return FormConfigs.default
+    }
+  }
+  
   getValidator(opts){
     return getValidator(opts)
   }
 }
 
+// this should be cached ie a true singleton
+export const getFormFactory = (cfg => {
+  return new FormFactory(cfg)
+})
 
-export default new FormFactory()
+export default FormFactory

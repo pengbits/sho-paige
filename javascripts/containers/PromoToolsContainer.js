@@ -5,8 +5,13 @@ import {
   showDetails,
   clonePromo, 
   cloneWithDurationPromo, 
+  setIsCopyingToContentBlock,
   deletePromo
 } from '../redux/promos/actions'
+
+import {
+  getContexts
+} from '../redux/content-blocks'
 
 import {
   OPTIONS_FOR_CONTEXT,
@@ -42,6 +47,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
     cloneWithDurationPromo: function({id,contentBlockId}){
       dispatch(clonePromo({id,contentBlockId}, {offsetDuration:true}))
+    },
+    
+    // 'clone to section' is an alias of 'copy to content-block'
+    cloneToSection: function({id,contentBlockId}){
+      // todo: bundle these actions into a single dispatch call w/ middleware
+      // also need a way to stash the selected promo by setting attrs similar to editPromo([])
+      dispatch(selectPromo({id}))
+      dispatch(setIsCopyingToContentBlock(true))
+      dispatch(getContexts())
     },
     
     deletePromo: function({id}){

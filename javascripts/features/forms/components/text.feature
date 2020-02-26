@@ -38,7 +38,7 @@ Feature: Form Types
     """
     <div className="promo-form__input promo-form__input--text promo-form__input--image-path promo-form__input--large-image-url">
       <label htmlFor="largeImageURL">
-        largeImageURL
+        large image url
       </label>
       <input
         name="largeImageURL"

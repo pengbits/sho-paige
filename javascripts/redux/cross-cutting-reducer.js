@@ -1,10 +1,14 @@
 import {
   SET_ATTRIBUTES,
-  NEW_PROMO
+  NEW_PROMO,
+  CREATE_PROMO
 } from './promos/types'
 
 import {
-  getKeyFromContentBlock,
+  getKeyFromContentBlock
+} from './content-block'
+
+import {
   getValues,
   getTemplates,
   getDefaults
@@ -50,7 +54,7 @@ export default (state={}, action={}) => {
           }
         }
       }
-        
+
     default: 
       return {...state}
   }

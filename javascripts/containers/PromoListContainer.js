@@ -26,7 +26,8 @@ const mapStateToProps = (state) => {
     detailsVisible,
     details,
     highlighted,
-    selected
+    selected,
+    isCopyingToContentBlock // in the middle of copying a promo to content-block
   } = state.promos || {}
   
   const {
@@ -115,7 +116,8 @@ const mapStateToProps = (state) => {
     currentResponsePage,
     responseSize,
     isSearchContext,
-    isContentBlockContext
+    isContentBlockContext,
+    isCopyingToContentBlock
   }
 }
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Field } from 'redux-form'
 import cn from 'classnames'
 
+import {humanize} from '../../utils/string'
 import {getAttrs} from './FormsAttrsMap'
 import {getClassNames} from './FormClassNames'
 // no refs to Field or reduxForm in here - these are just the unconnected
@@ -14,7 +15,7 @@ export const Select = ({input, inputType, dataType, meta, inline, options}) => {
   return (
     <div className={getClassNames({name,inputType,dataType,meta})}>
       {!inline && 
-        <label htmlFor={name}>{name}</label>
+        <label htmlFor={name}>{humanize(name)}</label>
       }
       <Field 
         name={name}  

@@ -7,14 +7,22 @@ import createPromoMock from '../mocks/createPromo'
 const  PromoMock = createPromoMock.payload
 import getContentBlockMock from '../mocks/getContentBlock'
 const  ContentBlockMock = getContentBlockMock.payload
+import getContentBlocksMock from '../mocks/getContentBlocks'
+// const  ContentBlocksMock = getContentBlocksMock
 
 // reducers
 import rootReducer from '../redux'
-import reducer, {
+
+// TODO - consolidate plural + single contentBlock reducers
+import contentBlockReducer, {
   setContentBlock, SET_CONTENT_BLOCK,
   renameContentBlock, RENAME_CONTENT_BLOCK,
   UPDATE_CONTENT_BLOCK
 } from '../redux/content-block'
+
+import contentBlocksReducer, {
+  getContentBlocks, GET_CONTENT_BLOCKS
+} from '../redux/content-blocks'
 
 import promoReducer from '../redux/promos' 
 import {
@@ -44,7 +52,15 @@ defineFeature(
   
   const given_there_is_a_list_of_promos = () => {
     list = ContentBlockMock.promotionList
-    store = mockStore(rootReducer({promos: promoReducer({list})}))
+    const initialState = rootReducer()
+    store = mockStore({
+      ...initialState,
+      promos: {
+        ...initialState.promos,
+        list
+      }
+    })
+    
     beforeState = resultingState(store, rootReducer, store.getState())
     expect(beforeState.promos.list.length).toBeGreaterThan(0)
   }
@@ -77,7 +93,7 @@ defineFeature(
     
     then('there will be a Content block selected', () => {
       expectActions(store, [SET_CONTENT_BLOCK])
-      afterState = resultingState(store, reducer, beforeState)
+      afterState = resultingState(store, contentBlockReducer, beforeState)
       expect(afterState.id).toBe(ContentBlockMock.id)
       expect(afterState.name).toBe(ContentBlockMock.name)
     });
@@ -100,10 +116,12 @@ defineFeature(
     });
 
     then('the Promo Details will include a Content Block Id', () => {  
-      expectActions(store, [SET_CONTENT_BLOCK, types.SET_ATTRIBUTES, types.EDIT_PROMO])
+      const actionList = store.getActions().map(a => a.type)
+      expect(actionList).toContain(types.SET_ATTRIBUTES) // SET_ATTRIBUTES is dispatched as a side-effect of editPromo()
       expect(afterState.promos.details.contentBlockId).toEqual(ContentBlockMock.id)
     });
   });
+
 
   test('Rename Content Block', ({ given, when, then, pending }) => {
     given('there is a Content Block selected', given_there_is_a_content_block_selected)

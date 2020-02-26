@@ -5,7 +5,7 @@ import moment from 'moment'
 import Adapter from 'enzyme-adapter-react-16';
 import Enzyme, { shallow, mount, render } from 'enzyme';
 import reactElementToJSXString from 'react-element-to-jsx-string';
-import FormFactory from '../components/forms/FormFactory'
+import {getFormFactory} from '../components/forms/FormFactory'
 import {capitalize} from '../utils/string'
 
 // settings
@@ -24,16 +24,17 @@ let props
 let meta
 let input
 let field
+let factory = getFormFactory({context:'wibble'})
 
 const given_this_input = (json) => {
   props = JSON.parse(json)
-  meta  = props.meta
-  input = props.input
+  meta  = props.meta  || {}
+  input = props.input || {}
 }
 
 const get_component_from_factory = () => {
   const {name,dataType,inputType} = props
-  component = FormFactory.getInput({name,dataType,inputType})
+  component = factory.getInput({name,dataType,inputType})
   return component
 }
 
@@ -146,17 +147,36 @@ defineFeature(loadFeature(`${PAIGE_ROOT}/features/forms/components/datetime.feat
 })
 
 
+// Image with preview, hunter, and link-validator)
+defineFeature(loadFeature(`${PAIGE_ROOT}/features/forms/components/image-path.feature`), test => {
+  test("Render Image as ImagePath", ({given, when, then }) => {
+    given('this input', (json) => given_this_input(json))                    
+    when('I render it', (meta,input)     => when_i_render_it(meta,input))      
+    then('it has this structure', (jsx)  =>  then_it_has_this_this_jsx_structure(jsx))
+  })
+})
+
+
 // form-group
 defineFeature(loadFeature(`${PAIGE_ROOT}/features/forms/components/form-group.feature`), test => {
   test("Render Inline Form Group", ({given, when, then }) => {
     given('this input', (json) => given_this_input(json))            
     
     when('I render it', () => {
-      element = FormFactory.getFormGroupElement({...props,children:null})
+      element = factory.getFormGroupElement({...props,children:null})
       Element = function(){ return element }
       wrapper = shallow(<Element />)
     })
     
     then('it has these classnames', then_it_has_these_classnames)
+  })
+})
+
+// images
+defineFeature(loadFeature(`${PAIGE_ROOT}/features/forms/components/image-path.feature`), test => {
+  test("Render Image as ImagePath", ({given, when, then }) => {
+    given('this input', (json)           => given_this_input(json))                    
+    when('I render it', (meta,input)     => when_i_render_it(meta,input))              
+    then('it has this structure', (jsx)  => then_it_has_this_this_jsx_structure(jsx))  
   })
 })

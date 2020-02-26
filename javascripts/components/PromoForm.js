@@ -1,21 +1,33 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import Promo from '../models/Promo'
-import FormFactory from './forms/FormFactory'
-import FormConfig from './PromoFormConfig'
+import ErrorGroup from './forms/ErrorGroup'
+import FormFactory, {getFormFactory} from './forms/FormFactory'
+import FormConfigs from './form-configs'
 import Buttons from './forms/Buttons'
 
-// get the element for wrapping inputs into sections
-const FormGroup = FormFactory.getFormGroupElement.bind(FormFactory)
-// parse the configuration for the form into a map where keys
-// are fieldNames and values are components suitable for rendering into the view
-// todo: should this be encapsulated in the Factory?
-const InputMap  = FormFactory.getInputMap(FormConfig)
+let FormGroup, FormConfig, InputMap, Validator, factory;
 
-// get the validator function to pass to redux-form
-const validator = FormFactory.getValidator(['default',{'config':FormConfig}])
+
 
 class PromoForm extends Component {
+  componentWillMount() {
+    
+    // get the contentBlock-derived key ie 'recaps'
+    const context = this.props.contentBlockKey
+    
+    // get the factory
+    factory   = getFormFactory({context})
+    
+    // get the element for wrapping inputs into sections
+    FormGroup  = factory.getFormGroupElement.bind(factory)
+    
+    // parse the configuration for the form into a map where keys
+    // are fieldNames and values are components suitable for rendering into the view
+    FormConfig = factory.getConfig({context})
+    InputMap   = factory.getInputMap(FormConfig)
+  }
+  
   render(){
     const {
       id,
@@ -39,24 +51,16 @@ class PromoForm extends Component {
       detailsError,
       detailsErrorMessages,
       groupError,
-      groupErrorMessages
+      groupErrorMessages,
+      smallImageUrlStatus,
+      largeImageUrlStatus
     } = this.props;
     
     return (
       <form className="promo-form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-        {detailsError && detailsErrorMessages.length ? 
-          (<p className='promo-form__error-message'>
-            We were unable to save the promotion. Please check double check your input for errors and try again. If you continue to see the error please contact us at tools@showtime.net.<br />
-          </p>) : undefined
-        }
-
-        {groupError && groupErrorMessages.length ? 
-          (<p className='promo-form__error-message'>
-            There are issues with the fields below<br />
-            {groupErrorMessages.map((e,i) => <span key={i}>{e}<br /></span>)}
-          </p>) : undefined
-        }
-      
+        <ErrorGroup position='top' 
+          errors={groupErrorMessages} 
+        />
         <FormGroup name='head' inline='true'>
           <span className='promo-form__input promo-list__item__column--window' 
             data-promotional-window='disabled'>
@@ -71,7 +75,10 @@ class PromoForm extends Component {
           <span className='promo-form__input promo-form__input--tools'></span>
         </FormGroup>
         <FormGroup name='body'>
-          {this.getGroupInputs('body', {ctaTypeOptions})}
+          {this.getGroupInputs('body', {ctaTypeOptions})} 
+          <ErrorGroup position='bottom' 
+            errors={detailsErrorMessages} 
+          />
         </FormGroup>
        <FormGroup name='footer'>
          <div className="footer__left-buttons">
@@ -88,7 +95,9 @@ class PromoForm extends Component {
   }
   
   getGroupInputs(name, opts){
-    return (FormConfig[name].children || []).map(input => {
+    return (FormConfig[name].children || []).filter(input => {
+      return !input.renderConditions || this.conditionallyRenderInput(input.renderConditions)
+    }).map(input => {
       return this.getInput(input,opts)
     })
   }
@@ -96,14 +105,26 @@ class PromoForm extends Component {
   getInput(input, opts={}){
     const Input = InputMap[input.name]
     const optionsForSelect = input.inputType !== 'select' ? 
-      {} : {'options': (input.options || opts.ctaTypeOptions)}
-    ;
-    return <Input 
+      {} : {'options': (input.options || opts.ctaTypeOptions)};
+          
+    const imagePathStatuses = input.inputType !== 'imagePath' ? 
+      {} : {[input.name] : this.props[input.name + 'Status']};
+
+      return <Input 
       key={`input-${input.name}`} 
+      imagePathStatuses={imagePathStatuses}
       {...input} 
       {...opts}
       {...optionsForSelect}
     />
+  }
+  
+  // see if the inputs should be conditionally omitted from the output based on prop state
+  conditionallyRenderInput(conditions){
+    for(const key in conditions){
+      if(this.props[key] !== conditions[key]) return false
+    }
+    return true
   }
 
   onSubmit(attrs){
@@ -115,8 +136,10 @@ class PromoForm extends Component {
       isDraft
     } = this.props
     
+    // pull these fussy properties out of the object with a spread,
+    // some need extra processing, and some (displayContext) are just discarded outright
     const {
-      startDate, endDate, setDraftMode, ...input
+      startDate, endDate, displayContext, setDraftMode, ...input
     } = attrs
     
     // only convert non-null input to datetimes
@@ -154,10 +177,10 @@ class PromoForm extends Component {
     // moved to form-hooks middleware
   }
 }
-
-export default reduxForm({
+const wrappedForm = reduxForm({
   form: 'promo',
   destroyOnUnmount: false,
   enableReinitialize: true,
-  validate: validator
 })(PromoForm)
+
+export default wrappedForm

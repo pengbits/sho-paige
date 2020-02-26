@@ -7,10 +7,11 @@
 // 4) is it required?
 
 export const FormsAttrsMap = {
-  'position' : {'size': '4'},
-  // 'number'   : {'type': 'number'}, dont cast numbers to html5 number inputs yet
-  'setDraftMode' : {'label':'Draft Mode'},
-  'textArea' : {'rows': 5}
+  'position'      : {'size': '4'},
+  // 'number'        : {'type': 'number'}, dont cast numbers to html5 number inputs yet
+  'setDraftMode'  : {'label':'Draft Mode'},
+  'textArea'      : {'rows': 5},
+  'displayContext': {'readOnly':true}
 }
 
 export const getAttrs = ({name,inputType,dataType,required}) => {

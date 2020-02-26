@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
+import $ from 'jquery'
 import cn from 'classnames'
 import PromoListHead from '../containers/PromoListHeadContainer'
 import PromoListItem from '../containers/PromoListItemContainer'
+import PromoListErrors from '../containers/PromoListErrorsContainer'
 import PromoDetails from './PromoDetails'
 import Pagination from "react-js-pagination";
+import ContentBlockBrowser from '../containers/ContentBlockBrowserContainer'
 import {ITEMS_PER_PAGE_CLIENT} from '../redux/pagination'
-import {NO_SEARCH_RESULTS_MESSAGE, NO_FILTERED_SEARCH_RESULTS_MESSAGE} from '../redux/promos/constants'
 
 class PromoList extends Component {
   componentWillMount() {
@@ -22,20 +24,19 @@ class PromoList extends Component {
   renderBody() {
     const {
       loading,
-      isSearchContext,
       displayList,
       shouldPaginate,
-      hasFilters
     } = this.props
-    
-    if(!loading && isSearchContext && displayList.length == 0){
+
+    if(!loading && displayList.length == 0){
       return (
         <div className='promo-list promo-list--empty'>
-          <p>{shouldPaginate && hasFilters ? NO_FILTERED_SEARCH_RESULTS_MESSAGE : NO_SEARCH_RESULTS_MESSAGE}</p>
+          <PromoListErrors />
           {shouldPaginate && this.renderPagination()}
-        </div>
+        </div> 
       )
-    } else {
+    } 
+    else {
       return this.renderList()
     }
   }
@@ -45,7 +46,8 @@ class PromoList extends Component {
       loading,
       isSearchContext,
       isContentBlockContext,
-      shouldPaginate
+      shouldPaginate,
+      isCopyingToContentBlock
     } = this.props
     
     return (
@@ -59,7 +61,8 @@ class PromoList extends Component {
           {loading && this.spinner()}
           {this.renderItems()}
         </div>
-        {shouldPaginate && this.renderPagination()}
+        {shouldPaginate          ? this.renderPagination() : null}
+        {isCopyingToContentBlock ? this.renderContentBlockBrowser() : this.pin(false)}
       </div >
     )
   }
@@ -81,6 +84,7 @@ class PromoList extends Component {
       )
     )
   }
+  
   renderPagination(){
     const {
       currentSelectedPage,
@@ -97,6 +101,11 @@ class PromoList extends Component {
     />)
   }
   
+  renderContentBlockBrowser(){
+    this.pin(true)  
+    return <ContentBlockBrowser />
+  }
+  
   onPageNumberClick(n){
     const {
       setCurrentSelectedPageNumber, 
@@ -109,7 +118,11 @@ class PromoList extends Component {
   }
   
   spinner(){
-    return (<span className="promo-list__spinner fa fa-spinner fa-spin fa-fw"></span>)
+    return (
+      <div className="loading-state">
+        <span className="loading-state__spinner fa fa-spinner fa-spin fa-fw"></span>
+      </div>
+    )
   }
 
   renderError () {
@@ -120,7 +133,10 @@ class PromoList extends Component {
       </div>
     )
   }
-
+  
+  pin(onoff){
+    $('html').toggleClass('has-modal', onoff)
+  }
 }
 
 export default PromoList

@@ -5,10 +5,13 @@ import {defineFeature, loadFeature} from 'jest-cucumber';
 // mocks
 import mockStore, { expectActions, resultingState, respondWithMockResponse} from '../mockStore'
 import updatePromoMock from '../mocks/updatePromo'
-import getPromosMock from '../mocks/getPromos'
+import getContentBlock from '../mocks/getContentBlock'
+const ContentBlockMock = getContentBlock.payload
 
 // reducers
 import reducer from '../redux/promos'
+import rootReducer from '../redux'
+
 import { 
   setAttributes,
   selectPromo,
@@ -30,47 +33,55 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
   let thePromo
   let theEdit
   
-  const initialState = reducer()
+  const initialState = rootReducer()
   beforeEach(function () { moxios.install()   });
   afterEach(function ()  { moxios.uninstall() });
   
   const given_there_is_a_list_of_promos = () => {
-    store = mockStore({...initialState, list:getPromosMock.page.content})
-    const {list} = store.getState()
-    expect(list.length).toBeGreaterThan(0)
+    store = mockStore({
+      ...initialState,
+      contentBlock: ContentBlockMock,
+      promos: {
+        ...initialState.promos,
+        list: ContentBlockMock.promotionList
+      }
+    })
+    
+    beforeState = store.getState()
+    expect(beforeState.promos.list.length).toBeGreaterThan(0)
   }
 
   const when_i_toggle_the_promo_details = () => {
     beforeState = {...afterState}
     store.dispatch(toggleDetails())
-    afterState = resultingState(store, reducer, beforeState)
+    afterState = resultingState(store, rootReducer, beforeState)
   }
   
   const when_i_select_a_promo = (expect) => {
-    const {list}   = store.getState()
+    const {list}   = store.getState().promos
     const {length} = list
     const i        = Math.floor(Math.random() * length)
     thePromo       = list[i]
     const {id}     = thePromo
     store.dispatch(selectPromo({id}))
     
-    afterState = resultingState(store, reducer, store.getState())
-    expect(afterState.selected).toEqual(id)
+    afterState = resultingState(store, rootReducer, store.getState())
+    expect(afterState.promos.selected).toEqual(id)
   }
   
   const when_i_select_edit_from_actions = (expect) => {
-    const id = afterState.selected;
+    const id = afterState.promos.selected;
     store.dispatch(editPromo({id}))
-    afterState = resultingState(store, reducer, beforeState)
-    expect(afterState.isEditing).toBe(true)
-    expect(afterState.details).toEqual(thePromo)
+    afterState = resultingState(store, rootReducer, beforeState)
+    expect(afterState.promos.isEditing).toBe(true)
+    expect(afterState.promos.details).toEqual(expect.objectContaining(thePromo))
   }
   
   test('Edit a Promo', ({ given, when, then, pending }) => {
     given('there is a list of promos', given_there_is_a_list_of_promos)
 
     given('the promo details are blank', () => {
-      const {details,detailsVisible} = store.getState()
+      const {details,detailsVisible} = beforeState.promos
       expect(details).toEqual({})
       // visibility is a new concept, just need a place to stick it 
       // in the browser, we can only edit the promo after toggling the form open
@@ -93,15 +104,15 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
       }
 
       store.dispatch(setAttributes(theEdit))
-      afterState = resultingState(store, reducer, store.getState())
+      afterState = resultingState(store, rootReducer, store.getState())
     });
 
     then('the promo details are visible', () => {
-      expect(afterState.detailsVisible).toBe(true)
+      expect(afterState.promos.detailsVisible).toBe(true)
     });
     
     then('the promo details are updated', () => {
-      expect(afterState.details).toEqual(theEdit)
+      expect(afterState.promos.details).toEqual(expect.objectContaining(theEdit))
     });
     
     when('I submit', () => {
@@ -123,7 +134,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
     });
     
     then('the list contains a promo with my changes', () => {
-      const {list} = resultingState(store, reducer, afterState)
+      const {list} = resultingState(store, rootReducer, afterState).promos
       // the list of attrs to compare with, can't just equate whole object
       const attrs = ['id','name','title','largeImageURL','smallImageURL']; 
       // build a list of promos that meet the criteria...
@@ -149,7 +160,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
 
     then('isEditing will be false', () => {
       beforeState = store.getState()
-      expect(beforeState.isEditing).toEqual(false)
+      expect(beforeState.promos.isEditing).toEqual(false)
     })
 
     when('I select a promo', () => when_i_select_a_promo(expect))
@@ -157,8 +168,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/edit-promo.feature'), test => 
     when('I select \'edit\' from actions', () => when_i_select_edit_from_actions(expect))
 
     then('isEditing will be true', () => {
-      const {isEditing} = afterState
-      expect(isEditing).toEqual(true)
+      expect(afterState.promos.isEditing).toEqual(true)
     })
   })
 })

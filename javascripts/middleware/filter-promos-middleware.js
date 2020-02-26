@@ -5,6 +5,7 @@ import {
 } from '../redux/promos/types'
 
 import {
+  sanitizePayload,
   SET_FILTERS,
   UNSET_FILTERS
 } from '../redux/filters'
@@ -34,10 +35,10 @@ const FilterPromosMiddleware = store => next => action => {
         persistedFilters = stateFilters.filter(filter => {
           return incomingFilters.find(f => f.type == filter.type) == undefined // no overlap
         })
-        
+          
         return next({
           ...action,
-          payload : incomingFilters.concat(persistedFilters)
+          payload : sanitizePayload(incomingFilters.concat(persistedFilters))
         })
         break;
         

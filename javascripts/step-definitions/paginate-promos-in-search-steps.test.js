@@ -56,6 +56,7 @@ defineFeature(
   let responseSize
 
 
+
   // put the app in the state it would be in if a user was searching for 'affair'
   // this is run before each test
   const i_am_conducting_a_search = () => {
@@ -67,7 +68,7 @@ defineFeature(
     // this is not neccesarry, but helps with debugging how list is being sliced + diced
     store.dispatch(setSort({'type':'id', direction:'ascending'}))
     afterState = resultingState(store, rootReducer, beforeState)
-	}
+  }
   	
 	const there_are_promos_in_the_promo_list = () => {		
     currentResponsePage = 1
@@ -95,7 +96,7 @@ defineFeature(
     
     beforeState = {...afterState}
     afterState = resultingState(store, rootReducer, beforeState)
-    // expect(afterState.pagination.currentSelectedPage).toEqual(Number(p))
+    expect(afterState.pagination.currentSelectedPage).toEqual(Number(p))
   }
   
   const promos_for_the_range_will_be_visible = (r) => {
@@ -103,15 +104,17 @@ defineFeature(
     const {list,paginatedList}   = afterState.promos
     const {currentVisiblePage} = afterState.pagination
     const range = r.split('...').map(r => Number(r))
+    
     // console.log(`range: ${range}`)
-    // console.log('visible() ' +paginatedList.map(p => p.id).join(', '))
-    //console.log('list() ' +list.slice(range[0],range[1]+1).map(p => p.id).join(', '))
+    // console.log('visible: ' +paginatedList.map(p => p.id).join(', '))
+    // console.log('list: ' +list.slice(range[0],range[1]+1).map(p => p.id).join(', '))
     expect(paginatedList.map(p => p.id)).toEqual(list.slice(range[0],range[1]+1).map(p => p.id))
   }
 
   const when_i_set_a_text_filter = (phrase) => {
     store = mockStore(afterState)
-    store.dispatch(setFilters([{type:'text',value:phrase}]))
+    // update: remove default start-date filter, it interferes with our tests
+    store.dispatch(setFilters([{type:'text',value:phrase},{type:'startDate',value:undefined}])) 
     afterState = resultingState(store, rootReducer, afterState)
   }
   
@@ -154,17 +157,16 @@ defineFeature(
   });
 
   test('The number of pagination pages will be set based on the size of the response', ({ given, when, then, pending }) => {
-    given('the search response has a size property greater than 0', () => {
-			expect(mockResponse.size).toBeGreaterThan(0)
-		});
-
     given('there are promos in the PromoList', there_are_promos_in_the_promo_list)
-
+    
+    given('the search response has a size property greater than 0', () => {
+      expect(mockResponse.size).toBeGreaterThan(0)
+    })
+    
     then('a corresponding number of pagination pages (totalResponsePages) will be set', () => {
 			expect(mockResponse.totalPages).toBeGreaterThan(0)
-			const totalExpectedPages   = Math.ceil(total_num_promos/items_per_page_server)
-			const {totalResponsePages} = afterState.pagination
-			expect(totalResponsePages).toEqual(totalExpectedPages)
+			const totalExpectedPages   = Math.ceil(total_num_promos / items_per_page_server)
+			expect(afterState.pagination.totalResponsePages).toEqual(totalExpectedPages)
     });
   });
 
@@ -174,7 +176,6 @@ defineFeature(
     given('the currentSelectedPage is set', () => {
       expect(afterState.pagination.currentSelectedPage).toEqual(1)
       expect(afterState.pagination.shouldPaginate).toEqual(true)
-
     });
 
     when('a new currentSelectedPage is selected', () => {
@@ -222,7 +223,7 @@ defineFeature(
     });
     
     when('I select a currentSelectedPage outside the visible range', () => {
-      currentSelectedPage = 11
+      currentSelectedPage = (items_per_page_client + 1)
       mockResponse = mockQueryResponseGenerator(total_num_promos, (currentResponsePage+1))
       respondWithMockResponse(moxios, mockResponse)
 
@@ -232,6 +233,7 @@ defineFeature(
 
     when('the next page number to fetch will be different from the last page number that was returned from the server', () => {
       nextPageToFetch = Math.ceil((currentSelectedPage * items_per_page_client)/items_per_page_server)
+      // console.log(`currentSelectedPage:${currentSelectedPage} nextPageToFetch:${nextPageToFetch}`)
       expect(currentResponsePage).not.toEqual(afterState.pagination.currentResponsePage)
       expect(nextPageToFetch).toEqual(afterState.pagination.currentResponsePage)      
     });
@@ -261,14 +263,14 @@ defineFeature(
     given('there are ten items or less in the PromoList', () => {
   		mockResponse = mockQueryResponseGenerator(10, 1)
       respondWithMockResponse(moxios, mockResponse)
-      
+  
       beforeState = {...afterState}
   		store = mockStore(beforeState)
   		return store.dispatch(getPromos()).then(() => afterState = resultingState(store, rootReducer, beforeState))
     })
-
+  
     given('the currentSelectedPage is set', the_current_page_is)
-
+  
     then('shouldPaginate will be false', () => {
       const {pagination} = afterState
       expect(pagination.shouldPaginate).toEqual(false)
@@ -278,7 +280,7 @@ defineFeature(
   test('Filters are reset when page changes', ({ given, when, then }) => {
     let filteredResultsPage2
     given('there are promos in the PromoList', there_are_promos_in_the_promo_list)
-
+  
     given('the filter and currentSelectedPage are set', () => {
       the_current_page_is(2)
       when_i_set_a_text_filter('bacon')
@@ -287,12 +289,12 @@ defineFeature(
       expect(filteredResultsPage2.length).toBeGreaterThan(0)
       // console.log(`p2 ${filteredResultsPage2.map(p => p.id).join(', ')}`)
     })
-
+  
     when('I change the currentSelectedPage', () => {
       store = mockStore(afterState)
       the_current_page_is(3)
     })
-
+  
     then('the filtered paginated list is refreshed', () => {
       // console.log(`p3 ${afterState.promos.filteredPaginated.map(p => p.id).join(', ')}`)
       expect(afterState.promos.filteredPaginated).not.toEqual(filteredResultsPage2)

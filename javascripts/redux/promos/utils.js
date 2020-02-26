@@ -13,6 +13,9 @@ export const OPTIONS = [{
   icon: ['icon-copy-with-duration'],
   name: 'clone with duration'
 },{
+  icon: ['icon-copy-to-section'],
+  name: 'clone to section'
+},{
   icon: ['fa-trash text-danger'],
   name: 'delete'
 }]
@@ -44,14 +47,47 @@ export const getHighestCopyNumber = (matchingNames, regex) => {
 }
 
 
+export const SERIES_SITE_REGEX = /^(\d+)-series-site/
+export const GENERIC_REGEX     = /^([^-]+)-.+/
+
+export const getPathToContext = (context) => {
+  if(!context) return false
+
+  if(SERIES_SITE_REGEX.test(context.contextKey)) {
+    const seriesId = SERIES_SITE_REGEX.exec(context.contextKey)[1]
+    if(seriesId == undefined) return false
+    
+    return `/shomin/paige/series/${seriesId}`
+  }
+  else if(GENERIC_REGEX.test(context.contextKey)) {
+    const section = GENERIC_REGEX.exec(context.contextKey)[1]
+    if(section == undefined || !context.id) return false
+    
+    return `/shomin/paige/${section}/${context.id}`
+  }
+  return false
+}
+
+export const getPathToContentBlock = (context={}, contentBlock={}) => {
+  if(getPathToContext(context) && contentBlock.contentBlockKey){
+    return [getPathToContext(context), contentBlock.contentBlockKey].join('/')
+  } else {
+    return false
+  }
+}
+
 // add extra display properties for rendering the 'context' column
 const sanitizePromo = (promo) => {
-  const {contentBlock} = (promo || {})
-  const {context}      = (contentBlock || {})
+  // extract the context + content-block nodes safely..
+  // (they are used to generate the paths for contextual links (relies on naming conventions))
+  const {contentBlock}    = (promo || {})
+  const {context}         = (contentBlock || {})
+
   return {
     ...promo, 
     'displayContentBlockName' : (contentBlock || {}).name,
-    'displayContextName'      : (context || {}).name 
+    'displayContextName'      : (context || {}).name,
+    'editorPath'              : (contentBlock || {}).editorPath
   } 
 }
 

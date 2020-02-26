@@ -20,7 +20,8 @@ class PromoTools extends Component {
     return (<a 
       key={name}
       href="#"
-      name={name}
+      name={name} 
+      title={name} 
       data-action={!disabled ? camelize(name) : ''}
       onClick={this.onClick.bind(this)} 
       className={cn(
@@ -39,7 +40,7 @@ class PromoTools extends Component {
     const el = e.currentTarget
     const {id, contentBlockId, isEditing} = this.props
     const attrs = {id,contentBlockId}
-    
+
     switch(el.dataset.action){
       case 'edit':
         if(!isEditing || confirm("Are you sure you want to start editing another Promotion? Your changes will not be saved")) {
@@ -56,6 +57,12 @@ class PromoTools extends Component {
       case 'cloneWithDuration':
         if(!isEditing || confirm("Are you sure you want to clone another Promotion? Your changes will not be saved")) {
           this.props.cloneWithDurationPromo(attrs)
+        }
+        break
+    
+      case 'cloneToSection':
+        if(!isEditing || confirm("Are you sure you want to copy a Promotion to another content-block while editing a Promotion? Your changes will not be saved")) {
+          this.props.cloneToSection(attrs)
         }
         break
       

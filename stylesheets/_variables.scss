@@ -19,4 +19,37 @@ $sizes-xxl : 50px;
 $promo-list-item-promotional-window-active  : $brand-success;
 $promo-list-item-promotional-window-expired : $brand-danger;
 $promo-list-item-promotional-window-upcoming: $brand-warning;
-$promo-list-item-promotional-window-draft   : #B8BDBD;;
+$promo-list-item-promotional-window-draft   : #B8BDBD;
+
+$promo-list-column-widths : (
+  "window"     : 0%       ,
+  "position"   : 10%    ,
+  "context"    : 17%      ,
+  "name"       : 19%      , 
+  "start-date" : 24.125%  ,
+  "end-date"   : 24.125%  ,
+  "tools"      : 5.75%     
+);
+
+$promo-list-column-min-widths: (
+  "position" : 115px
+);
+
+$promo-list-column-widths-for-content-block : (
+  "name"       : 29.75%,
+  "tools"      : 12%   
+);
+ 
+@mixin promo-list-column-width($key) {
+  flex-basis: map-get($promo-list-column-widths, $key);
+  
+  @if(map-has-key($promo-list-column-min-widths, $key)){
+    min-width: map-get($promo-list-column-min-widths, $key);
+  }
+  // override more conservative widths to let some columns breathe in content-block context
+  @if(map-has-key($promo-list-column-widths-for-content-block, $key)){
+    .promo-list--content-block-context & {
+      flex-basis: map-get($promo-list-column-widths-for-content-block, $key);
+    } 
+  }
+}

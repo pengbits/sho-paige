@@ -18,17 +18,17 @@ export default class PromoDetailsOutsideClick extends Component {
 
   /* Set the reference for the wrapper */
   setWrapperRef(node) {
-    this.wrapperRef = node;
+    this.wrapperRef = node; 
   }
 
-  /* A confirm message is shown if user attempts to navigate away from Promo Edit */
+  /* A confirm message is shown if user attempts to navigate away from Promo Edit using left click. Users can still use right click functinality to open new tab etc */
   handleClickOutside(event) {
-    if (this.wrapperRef && !this.wrapperRef.contains(event.target) && event.target.href) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target) && event.target.href && event.which===1) {
       if (!confirm("Are you sure you want to navigate from this Promotion? Your changes will not be saved")) {
         return false;
       } 
       else {
-        window.location.href = event.target.href;
+        event.target.click()
       }
     }
   }

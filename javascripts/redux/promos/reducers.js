@@ -3,6 +3,7 @@ import {APPLY_SORT} from '../sort'
 import {getCurrentVisiblePage} from '../pagination'
 import {SET_FILTERS,UNSET_FILTERS} from '../filters'
 import {SET_CURRENT_SELECTED_PAGE_NUMBER} from '../pagination'
+import axios from 'axios'
 
 import Promo from '../../models/Promo'
 
@@ -28,11 +29,14 @@ const initialState = {
   details           : {},
   detailsVisible    : false,
   isEditing         : false,
+  isCopyingToContentBlock : false,
   listError         : undefined,
   detailsError      : undefined,
   groupError        : undefined,
   loading           : false,
-  highlighted       : undefined
+  highlighted       : undefined,
+  smallImageUrlStatus : undefined,
+  largeImageUrlStatus : undefined
 };
 
 export const promos = (state=initialState, action={}) => {
@@ -47,6 +51,15 @@ export const promos = (state=initialState, action={}) => {
   let filteredPaginated
 
   switch(action.type){
+    case `${types.CHECK_VALID_URL}_PENDING`:
+    case `${types.CHECK_VALID_URL}_REJECTED`:
+    case `${types.CHECK_VALID_URL}_FULFILLED`:
+      return {
+        ...state,
+        [action.payload.field]: action.payload.status
+        
+      }
+
     case types.HIGHLIGHT_PROMO:
       return {
         ...state,
@@ -61,7 +74,7 @@ export const promos = (state=initialState, action={}) => {
       
     case types.SET_ATTRIBUTES:
       const details = {...action.payload}
-
+      
       return {
         ...state,
         details
@@ -93,7 +106,7 @@ export const promos = (state=initialState, action={}) => {
         ...state,
         loading: false,
         listError: false,
-        details: {},
+        // details: {}, using details as a clipboard for copyToContentBlock is this cool?
         detailsVisible: false,
         list,
         filtered,
@@ -130,7 +143,9 @@ export const promos = (state=initialState, action={}) => {
         details: {}, 
         detailsVisible: true,
         detailsError: false,
-        groupError: false
+        groupError: false,
+        smallImageUrlStatus : undefined,
+        largeImageUrlStatus : undefined
       }
       
     case types.EDIT_PROMO:
@@ -140,7 +155,21 @@ export const promos = (state=initialState, action={}) => {
         isEditing: true
       }
       
+    case types.SET_IS_COPYING_TO_CONTENT_BLOCK:
+      return {
+        ...state,
+        isCopyingToContentBlock: action.payload
+      }
+      
+      
     case `${types.CREATE_PROMO}_FULFILLED`:
+      // if copying to content-block, bypass the state change - we don't want it in the list
+      if(state.isCopyingToContentBlock) return {
+        ...state, 
+        loading: false, 
+        isCopyingToContentBlock:false
+      } 
+      
       // the nested payload.payload is because
       // 1) outer payload is the redux convention
       // 2) inner payload is what api is bundling some responses with)
@@ -310,7 +339,6 @@ export const promos = (state=initialState, action={}) => {
       // (because of some handling in filter-promos-middleware, this list is always comprehensive,
       // taking both the previous state and the incoming changes from the action into account):
       const filterState = action.type == SET_FILTERS ? action.payload : action.meta.persistedFilters
-      
       // generate the resulting filter to apply to the list 
       list     = (state.list || [])
       filterBy = generateCompositeFilter(filterState || []) 

@@ -1,11 +1,10 @@
 import moxios from 'moxios'
-import "babel-polyfill"
 import {defineFeature, loadFeature} from 'jest-cucumber';
 
 // mocks
 import mockStore, { expectActions, resultingState, respondWithMockResponse } from '../mockStore'
 import getContentBlock from '../mocks/getContentBlock'
-
+const ContentBlockMock = getContentBlock.payload
 // reducers
 import rootReducer from '../redux'
 import reducer from '../redux/promos'
@@ -44,12 +43,12 @@ defineFeature(
     moxios.uninstall();
   });
   
-  const initialState = reducer({
-    list: getContentBlock.payload.promotionList
-  })
+  const initialState = rootReducer({})
   
   let store
   let state
+  let beforeState
+  let afterState
   let thePromo
   let theClone
   let attrs
@@ -59,14 +58,23 @@ defineFeature(
   
   
   const given_there_is_a_list_of_promos = () => {
-    store = mockStore(initialState)
-    state = store.getState()
-    expect(state.list.length).toBeGreaterThan(0)
+    store = mockStore({
+      ...initialState,
+      contentBlock: ContentBlockMock,
+      promos: {
+        ...initialState.promos,
+        list: ContentBlockMock.promotionList
+      }
+    })
+    
+    beforeState = store.getState()
+    expect(beforeState.promos.list.length).toBeGreaterThan(0)
   }
   
   const when_i_clone_a_promo = (opts={}) => {
-    const i  = Math.floor(Math.random() * state.list.length)
-    thePromo = state.list[i]
+    const {list} = beforeState.promos
+    const i  = Math.floor(Math.random() * list.length)
+    thePromo = list[i]
     action   = clonePromo({id: thePromo.id}, opts)
   }
   
@@ -76,8 +84,8 @@ defineFeature(
     return store.dispatch(action)
   }
 
-  const create_promo_copy = (startDate,endDate) => {
-    const {list} = resultingState(store, reducer, state)
+  const get_expected_clone_attrs = (startDate,endDate) => {
+    const {list} = beforeState.promos
     const promoCopyRegex = Promo.promoCopyRegex()
     const promoName = thePromo.name
 
@@ -99,7 +107,9 @@ defineFeature(
       'name': thePromo.name.replace(promoCopyRegex, "") + " (Copy " + copyNumber + ")"
     }
     if(startDate) attrs.startDate = startDate 
-    if(endDate) attrs.endDate = endDate 
+    if(endDate)   attrs.endDate   = endDate 
+    
+    return attrs
   }
 
   const randomId = () => (Math.floor(Math.random() * 100))
@@ -111,7 +121,7 @@ defineFeature(
     
     when('I clone a promo', () => {
       when_i_clone_a_promo({offsetDuration:false})
-      create_promo_copy()
+      get_expected_clone_attrs()
     });
     
     when('I submit', () => {
@@ -123,11 +133,12 @@ defineFeature(
             `${CREATE_PROMO}_FULFILLED`,
             APPLY_SORT
           ])
+          afterState = resultingState(store, rootReducer, beforeState)
         })
     })
 
     then('the list contains a copy of the promo with \'(Copy 1)\' in the name', () => {
-      const {list} = resultingState(store, reducer, state)
+      const {list} = afterState.promos
       const match = list.find(p => {
        return p.name.indexOf(thePromo.name) > -1 && 
               p.name.indexOf('(Copy 1)') > -1
@@ -171,16 +182,9 @@ defineFeature(
     });
     
   	given('the promo does not have a start and end date', () => {
-      state.list = state.list.map(p => {
-        if(p.id == thePromo.id){
-          const {startDate,endDate,...attrs} = p
-          thePromo = attrs
-          return attrs
-        } else {
-          return p
-        }
-      })
-
+      const match = beforeState.promos.list.find(p => p.id == thePromo.id)
+      const {startDate,endDate, ...attrs} = match
+      thePromo = attrs
     })
     
   	when('I submit', () => {
@@ -203,27 +207,46 @@ defineFeature(
 
     when('I clone a promo once', () => {
       when_i_clone_a_promo()
-      create_promo_copy()
+      get_expected_clone_attrs()
+      expect(attrs.name).toMatch(/\(Copy 1\)$/)
     });
 
-    when('I submit once', () =>  when_i_submit({payload: attrs}))
+    when('I submit once', () =>  {
+      return when_i_submit({payload: attrs})
+        .then(() => afterState = resultingState(store, rootReducer, beforeState))
+    })
 
-    when('I clone a promo twice', () => create_promo_copy());
+    when('I clone a promo twice', () => {
+      beforeState = {...afterState}
+      action = clonePromo({id: thePromo.id})
+      get_expected_clone_attrs()
+      expect(attrs.name).toMatch(/\(Copy 2\)$/)
+    })
+    
+    when('I submit twice', () =>  {
+      return when_i_submit({payload: attrs})
+        .then(() => afterState = resultingState(store, rootReducer, beforeState))
+    })
+    
+    when('I clone a promo three times', () => {
+      beforeState = {...afterState}
+      action = clonePromo({id: thePromo.id})
+      get_expected_clone_attrs()
+      expect(attrs.name).toMatch(/\(Copy 3\)$/)
+    })
 
-    when('I submit twice', () =>  when_i_submit({payload: attrs}))
+    when('I submit three times', () =>  {
+      return when_i_submit({payload: attrs})
+        .then(() => {
+          afterState = resultingState(store, rootReducer, beforeState)
+        })
+    })
 
-    when('I clone a promo three times', () => create_promo_copy());
-
-    when('I submit three times', () => when_i_submit({payload: attrs}))
     
     then('the list contains a copy of the promo with \'(Copy 3)\' in the name', () => {
-      const {list} = resultingState(store, reducer, state)
-      const match = list.find(p => {
-        return p.name.indexOf(thePromo.name) > -1 && 
-              p.name.indexOf('(Copy 3)') > -1
-      })
+      const {list} = afterState.promos
+      const match = afterState.promos.list.find(p => p.name == attrs.name && p.id == attrs.id)
       expect(match).toBeTruthy()
-      expect(match.position).toEqual(thePromo.position)
     });
   })
 })

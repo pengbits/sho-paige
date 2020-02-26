@@ -47,7 +47,7 @@ defineFeature(
 
     when('I load the promos endpoint', () => {
       respondWithMockResponse(moxios, getContentBlockMock)
-      
+      // console.log(getPromos)
       store = mockStore(afterState)
       return store.dispatch(getPromos())
       .then(() => {

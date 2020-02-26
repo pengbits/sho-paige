@@ -25,3 +25,4 @@ Feature: Content Blocks
      And there is a Content Block selected 
     When I clone a promo
     Then the cloned promo will include a Content Block Id 
+    

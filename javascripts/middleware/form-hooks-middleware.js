@@ -4,15 +4,18 @@ import {
   focus,
   change, 
   setSubmitFailed,
-  getFormValues
+  getFormValues,
+  unregisterField
 } from 'redux-form'
 
 const BLUR                = blur().type //'@@redux-form/BLUR'
 const FOCUS               = focus().type //'@@redux-form/FOCUS'
 const CHANGE              = change().type //'@@redux-form/CHANGE'
+const UNGREGISTER_FIELD   = unregisterField().type //'@@redux-form/UNREGISTER_FIELD
 const SET_SUBMIT_FAILED   = setSubmitFailed().type //'@@redux-form/SET_SUBMIT_FAILED'
 const UPDATE_SYNC_ERRORS  = '@@redux-form/UPDATE_SYNC_ERRORS'
-import {INPUTS_IN_HEAD} from '../components/PromoFormConfig'
+import {INPUTS_IN_HEAD} from '../components/form-configs'
+import {imagePathFields} from '../components/form-configs/default';
 
 import { 
   NEW_PROMO, 
@@ -21,20 +24,24 @@ import {
   HIGHLIGHT_PROMO, 
   UNHIGHLIGHT_PROMO,
   UNSET_DATETIME,
+  EDIT_PROMO,
 } from '../redux/promos/types'
 
-import { groupErrorUpdated }  from '../redux/promos/actions'
+import { groupErrorUpdated, checkValidUrl }  from '../redux/promos/actions'
 import { UNSET_FILTERS }      from '../redux/filters'
 import { SET_CONFIG}          from '../redux/configs'
 
+import { CLOSE_PICKER } from '../redux/datetimes'
+import { getKeyFromContentBlock } from '../redux/content-block'
+
 import { 
-  setDefaults, 
-  getKeyFromContentBlock,
+  setDefaults,
   getTemplateForField,
   getTemplateWasApplied,
   applyTemplateToField,
   APPLY_TEMPLATE
 } from '../redux/form-defaults'
+import axios from '../utils/axios'
 
 const FormHooksMiddleware = store => next => action => {
   if(typeof action =='object'){  // not true of thunks, they'll be functions
@@ -52,6 +59,13 @@ const FormHooksMiddleware = store => next => action => {
       error,
       doDispatch
     ;
+    
+    // for redux-form events originating outside the promo-form, just abort:
+    if([CHANGE,BLUR].includes(action.type)){
+      if(action.meta.form !== 'promo'){
+        return next(action)
+      }
+    }
     
     switch(action.type){
       // need to listen to config events for the initial load of form defaults
@@ -82,11 +96,11 @@ const FormHooksMiddleware = store => next => action => {
         
       case `${CREATE_PROMO}_FULFILLED`:
       case `${UPDATE_PROMO}_FULFILLED`:
-        const payload = action.payload.payload || {};
-        const id      = payload ? payload.id : undefined;
+        payload  = action.payload.payload || {};
+        const id = payload ? payload.id : undefined;
 
         if(payload && id){
-          highlightRow({store, id})
+          !store.getState().promos.isCopyingToContentBlock && highlightRow({store, id})
         } else {
           return store.dispatch({
             type    : action.type.replace('_FULFILLED','_REJECTED'),
@@ -94,11 +108,20 @@ const FormHooksMiddleware = store => next => action => {
           })
         }
         break;
+      
+      case EDIT_PROMO: 
+        //Let's validate image urls when a user opens a promo to edit 
+        const {details} = store.getState().promos || {}
+        imagePathFields.forEach(field => {
+          store.dispatch(checkValidUrl(details[field], `${field}Status`))
+        })
+        break;
         
       case BLUR:
       case CHANGE:
-        
         field      = action.meta.field
+        form       = store.getState().form
+        syncErrors = form.promo.syncErrors || {}
         // we are conditionally dispatching on BLUR and CHANGE actions,
         // since they have the fieldname available as metadata,
         // but we impose a tiny delay so UPDATE_SYNC_ERRORS can propogate for the CHANGE case..
@@ -106,7 +129,7 @@ const FormHooksMiddleware = store => next => action => {
           form       = store.getState().form
           syncErrors = form.promo.syncErrors
           
-          // either there is an error, or it was cleared or no-op
+          // either there is an error, or it was cleared, or else there's nothing to do
           error = syncErrors ? syncErrors[field] : undefined
           doDispatch = (
             (action.type == BLUR   && !!error) ||
@@ -121,11 +144,21 @@ const FormHooksMiddleware = store => next => action => {
             error
           }))
           
-          
         }, 0)
+        
+        // if the input that was just set is an image, validate the url
+        if(action.type == BLUR && imagePathFields.includes(field)) {
+          store.dispatch(checkValidUrl(action.payload, `${field}Status`))
+        }
         break
     
-      
+      case CLOSE_PICKER:
+        // simulate a BLUR to trigger the validation above for consistent handling of fields in the head
+        field    = action.payload.name
+        payload  = store.getState().form.promo.values[field]  
+        payload && store.dispatch(blur('promo', field, payload))
+        break
+        
       case FOCUS:
         const {contentBlock, formDefaults} = store.getState()
         field     = action.meta.field
@@ -214,7 +247,7 @@ const FormHooksMiddleware = store => next => action => {
 }
 
 
-const highlightRow = ({store,id}) => {
+export const highlightRow = ({store,id}) => {
   setTimeout(store.dispatch, 0,   {type: HIGHLIGHT_PROMO, payload: {id}})
   setTimeout(store.dispatch, 500, {type: UNHIGHLIGHT_PROMO})
   // ^^^ timeout of 500ms to match transition-duration of 0.5s

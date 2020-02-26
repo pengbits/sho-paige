@@ -1,5 +1,7 @@
 import {FORM_SECTIONS} from '../components/forms/FormFactory'
 import Promo  from '../models/Promo'
+import {errorMessages} from '../../../utils/errors';
+import {humanizeField} from '../../../utils/string';
 
 const rules_default = {} // moved to config
 
@@ -47,6 +49,7 @@ const getAllRules = (strategies) => {
 // called against a single field
 export const validateInput = (input,field,rule,values) => {
   const errors = {};
+  
   if(rule.required && !input){
     errors[field] = `${field} can't be blank`;
   }
@@ -79,6 +82,13 @@ export const validateInput = (input,field,rule,values) => {
         }
       }
     }
+
+    if(rule.enforceHttps){
+      if(input.slice(0,8) !== 'https://') {
+        errors[field] =  `${humanizeField(field)} ${errorMessages['https']}`
+      }      
+    }
+
     // this is ignoring startDate input but that's another way
     // to introduce or remove the error...
     
@@ -116,7 +126,7 @@ export const getValidator = (strategy, custom) => {
 
   let rules = getAllRules(strategies)
   Object.assign(rules, (custom || {}))
-
+  
   return values => {
     let errors = {};
     for(let field in rules){

@@ -56,3 +56,13 @@ Feature: Front-End Form Validation
     Given there are validation rules for 'dataType' strategy
     When I enter a string for position
     Then there will be some errors
+    
+  Scenario: Image paths must use secure protocol
+    Given there are validation rules
+    When I enter an image path such as "http://sho.com/assets/wibble.png"
+    Then there will be some errors
+  
+  Scenario: Image paths must not have extra invalid chars after protocol
+    Given there are validation rules
+    When I enter an image path such as "httpssss://sho.com/assets/wobble.png"
+    Then there will be some errors

@@ -4,12 +4,6 @@ $table-row-height : $sizes-xl + $sizes-xxl;
   position: relative;
 }
 
-.promo-list__spinner {
-  position: absolute;
-  top   : $sizes-m; 
-  right : $sizes-m;
-}
-
 .promo-list__item {  
   display: flex;
   position: relative;
@@ -20,7 +14,7 @@ $table-row-height : $sizes-xl + $sizes-xxl;
   transition-property: background-color;
   transition-duration: 0.5s; // must match value in form-hooks-middleware
   transition-timing-function: ease-in-out;
-  // text-align: center;
+
   &:nth-child(odd) {
     background-color:  $colors-table-row-grey;
   }
@@ -47,6 +41,7 @@ $table-row-height : $sizes-xl + $sizes-xxl;
     .promo-list__item__column--start-date,
     .promo-list__item__column--end-date {
       display: flex;
+      justify-content: flex-start;
       align-items: center;
       cursor: pointer;
     }
@@ -80,34 +75,37 @@ $table-row-height : $sizes-xl + $sizes-xxl;
       &[data-schedule-status="upcoming"] { background-color: $promo-list-item-promotional-window-upcoming }
       &[data-schedule-status="draft"]    { background-color: $promo-list-item-promotional-window-draft }
     }
-    
-    &--window     { flex-basis: 0%  }
-    &--position   { flex-basis: 10%; min-width: 90px; }
-    &--context    { flex-basis: 25% }
-    &--name       { flex-basis: 25% }
-    &--start-date { flex-basis: 15% }
-    &--end-date   { flex-basis: 15% }
-    &--tools      { flex-basis: 10% }
+  
+    &--window     { @include promo-list-column-width("window")     }    
+    &--position   { @include promo-list-column-width("position")   } 
+    &--context    { @include promo-list-column-width("context")   } 
+    &--name       { @include promo-list-column-width("name")       }      
+    &--start-date { @include promo-list-column-width("start-date") }  
+    &--end-date   { @include promo-list-column-width("end-date")   }   
+    &--tools      { @include promo-list-column-width("tools")      }
     
     &--position {
-      padding-left: $sizes-xl 
+      padding-left: $sizes-xl;
+      min-width: 115px;
     }
       
     &--tools {
       text-align: right; 
-      padding-right: $sizes-l
-    }
-    &:last-child {
-      padding: $sizes-l $sizes-l $sizes-l 0;
+      padding-left: 0
     }
   }
   
   .promo-list__item__sort-direction-icon {
     padding-left: $sizes-s;
   }
-  
-  &--is-editing {
-    padding: 0 !important;
+  .promo-list__item__context-link {
+    &,
+    &__context, 
+    &__content-block {
+      display: block;
+      text-decoration: none;
+    }
+    &__context { margin-bottom: 1em }
   }
   
   .promo-tools {
@@ -122,7 +120,7 @@ $table-row-height : $sizes-xl + $sizes-xxl;
   }
 
   .promo-tools a {
-    margin-right: 13px;
+    margin-right: 10px;
   }
 
   .promo-tools a:nth-last-child(-n+2) {
@@ -138,21 +136,22 @@ $table-row-height : $sizes-xl + $sizes-xxl;
     top: 2px;
     color: #337ab7;
   }
-}
-
-// adjust column widths for diff contexts
-.promo-list--content-block-context {
-  .promo-list__item__column--name {
-    flex-basis: 40%;  
-    overflow: hidden;
-  }
-  .promo-list__item__column--start-date,
-  .promo-list__item__column--end-date {
-    flex-basis: 20%;
+  
+  .icon-copy-to-section {
+    background-image: url('../../../library/images/svg/copy-to-section.svg');
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    position: relative;
+    top: 2px;
   }
 }
 
 .promo-list .pagination  {
   transform: translateX(-50%);
   margin-left: 50%;
+}
+
+.promo-list a{
+  cursor: pointer;
 }

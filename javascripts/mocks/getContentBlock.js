@@ -4,7 +4,7 @@
 import Promo from '../models/Promo'
 const timestamp = (dateStr) => (Promo.toTimestamp(Promo.parseDate(dateStr)))
 
-export default {
+const GetContentBlockMock = {
   "timestamp": 1533231922482,
   "status": {
     "code": 200,
@@ -32,8 +32,9 @@ export default {
       "startDate": timestamp('01-01-19'),
       "endDate":   timestamp('01-15-19'),
       "isDraft": true,
-      "position": 20
-    }, {
+      "position": 20,
+			"seriesId": 1031103
+		}, {
       "id": 2,
       "name": "Zuccini The Affair 401 Preview",
       "title": "Watch a preview of Season 4",
@@ -46,8 +47,9 @@ export default {
       "startDate": timestamp('01-17-19'),
       "endDate":   timestamp('01-28-19'),
       "isDraft": true,
-      "position": 10
-    }, {
+      "position": 10,
+			"seriesId": 1031103
+		}, {
       "id": 3,
       "name": "Grapes The Affair Season 4 Character Focus - Allison and Cole",
       "title": "Alison and Cole in Season 4",
@@ -60,8 +62,9 @@ export default {
       "startDate": timestamp('01-10-19'),
       "endDate":  null,
       "isDraft": true,
-      "position": 30
-    }, {
+      "position": 30,
+			"seriesId": 1031103
+		}, {
       "id": 4,
       "name": "Berries The Affair Season 4 Same Mistakes Spot",
       "title": "Check out a preview of Season 4",
@@ -74,8 +77,9 @@ export default {
       "startDate": timestamp('01-05-19'),
       "endDate":   timestamp('01-20-19'),
       "isDraft": true,
-      "position": 100
-    }, {
+      "position": 100,
+			"seriesId": 1031103
+		}, {
       "id": 5,
       "name": "Squash The Affair Season 4 Character Focus - Noah and Vik",
       "title": "Find out how Noah really feels about Vik",
@@ -88,8 +92,9 @@ export default {
       "startDate": null,
       "endDate":   timestamp('01-20-19'),
       "isDraft": false,
-      "position": 20
-    }, {
+      "position": 20,
+			"seriesId": 1031103
+		}, {
       "id": 6,
       "name": "Toast The Affair Season 2 TBT preview",
       "title": "Catch Up on Seasons 1-3 for TBT preview",
@@ -101,8 +106,9 @@ export default {
       "ctaLink": "/video/62285/the-affair-series-recap",
       "startDate": timestamp('01-19-19'),
       "endDate":   timestamp('01-21-19'),
-      "position": 50
-    },{
+      "position": 50,
+			"seriesId": 1031103
+		}, {
       "id": 7,
       "name": "Carrots The Affair Season 1-3 Recap",
       "title": "Catch Up on Seasons 1-3 of The Affair in 30 seconds",
@@ -115,8 +121,9 @@ export default {
       "startDate": timestamp('01-10-19'),
       "endDate":   timestamp('01-12-19'),
       "isDraft": false,
-      "position": 50
-    },{
+      "position": 50,
+			"seriesId": 1031103
+		}, {
       "id": 8,
       "name": "Cantelope Penny Dread Season 2 TBT preview",
       "title": "Cantelope Penny Dread Seasons 1-3 for TBT preview",
@@ -132,3 +139,56 @@ export default {
     }]
   }
 }
+
+const status = {
+  code: 200,
+  success: true,
+  message: "OK",
+  errors: []
+}
+export const TheAffairSecondaryContentBlock = {
+  timestamp: 1572272718168,
+  status,
+  payload: {
+    id: 43,
+    name: "Secondary Tiles",
+    contentBlockKey: "1031103-secondary-tiles",
+    contextId: 41,
+    createdDate: 1539338425000,
+    updatedDate: null,
+    editorPath: "/shomin/paige/series/1031103/1031103-secondary-tiles",
+    promotionList: GetContentBlockMock.payload.promotionList.map((p) => {
+      return {
+        ...p, 
+        id    : p.id + 10, // ensure distinct ids between mocks
+        title : p.title.replace(/Penny\sDread/,'The Affair'),
+        name  : p.name.replace(/Penny\sDread/,'The Affair')
+      }
+    })
+  }
+}
+
+export const OnBecomingAGodSecondaryContentBlock = 
+{
+  timestamp: 1572272874153,
+  status,
+  payload: {
+    id: 1605,
+    name: "Secondary Tiles",
+    contentBlockKey: "1035023-secondary-tiles",
+    contextId: 621,
+    createdDate: 1561386548000,
+    updatedDate: 1561386548000,
+    editorPath: "/shomin/paige/series/1035023/1035023-secondary-tiles",
+    promotionList: TheAffairSecondaryContentBlock.payload.promotionList.map((p) => {
+      return {
+        ...p, 
+        id    : p.id + 10, // ensure distinct ids between mocks
+        title : p.title.replace(/The\sAffair/,'On Becoming a God'),
+        name :  p.name.replace(/The\sAffair/,'On Becoming a God')
+      }
+    })
+  }
+}
+
+export default GetContentBlockMock

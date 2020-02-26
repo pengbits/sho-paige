@@ -1,5 +1,7 @@
 import AxiosWrapper from '../../utils/axios'
- const axios = () => AxiosWrapper.instance()
+const axiosWrapper = () => AxiosWrapper.instance()
+import axios from 'axios'
+
 import {createAction} from 'redux-actions'
 import {CONTENT_BLOCK_CONTEXT,SEARCH_CONTEXT} from '../app'
 import {setTotalResponsePages, setResponseSize, SET_CURRENT_SELECTED_PAGE_NUMBER, ITEMS_PER_PAGE_CLIENT, getCurrentVisiblePage} from '../pagination'
@@ -7,19 +9,20 @@ import {setTotalResponsePages, setResponseSize, SET_CURRENT_SELECTED_PAGE_NUMBER
 import {findMatchingNames,getHighestCopyNumber} from './utils'
 import * as types from './types'
 import Promo from '../../models/Promo'
-
+import Cookies from 'js-cookie'
 
 // simple action creators
-export const unsetDatetime = createAction(types.UNSET_DATETIME)
-export const setAttributes = createAction(types.SET_ATTRIBUTES)
-export const selectPromo   = createAction(types.SELECT_PROMO)
-export const toggleDetails = createAction(types.TOGGLE_DETAILS)
-export const showDetails   = createAction(types.SHOW_DETAILS)
-export const hideDetails   = createAction(types.HIDE_DETAILS)
-export const cancelEditing = createAction(types.CANCEL_EDITING)
-export const badApiResponse = createAction(types.BAD_API_RESPONSE)
-export const noSearchResults = createAction(types.NO_SEARCH_RESULTS)
+export const unsetDatetime     = createAction(types.UNSET_DATETIME)
+export const setAttributes     = createAction(types.SET_ATTRIBUTES)
+export const selectPromo       = createAction(types.SELECT_PROMO)
+export const toggleDetails     = createAction(types.TOGGLE_DETAILS)
+export const showDetails       = createAction(types.SHOW_DETAILS)
+export const hideDetails       = createAction(types.HIDE_DETAILS)
+export const cancelEditing     = createAction(types.CANCEL_EDITING)
+export const badApiResponse    = createAction(types.BAD_API_RESPONSE)
+export const noSearchResults   = createAction(types.NO_SEARCH_RESULTS)
 export const groupErrorUpdated = createAction(types.GROUP_ERROR_UPDATED)
+export const setIsCopyingToContentBlock = createAction(types.SET_IS_COPYING_TO_CONTENT_BLOCK) 
 
 // more complex action creators and thunks/sagas
 export const getPromos = function(responsePageNumber) {
@@ -43,14 +46,14 @@ export const getPromos = function(responsePageNumber) {
   }
 }
 
-const getPromosForContentBlock = function(dispatch, {id}){
+export const getPromosForContentBlock = function(dispatch, {id}){
   if(!id) {
     throw new Error('|promos| can\'t get promos without content-block id')
   }
   
   return dispatch({
     type: types.GET_PROMOS,
-    payload: axios().get(`/shomin/api/paige/content-block/${id}`)
+    payload: axiosWrapper().get(`/shomin/api/paige/content-block/${id}`)
       .then(xhr => {
         if(xhr.data && xhr.data.payload && xhr.data.payload.promotionList) {
           return xhr.data.payload.promotionList
@@ -69,8 +72,9 @@ const getPromosForSearchQuery = function(dispatch, {query}, responsePageNumber){
   // responsePageNumber && console.log(`getPromosForSearchQuery ${responsePageNumber}`)
   return dispatch({
     type: types.GET_PROMOS,
-    payload: axios().get(`/shomin/api/paige/promotions/${responsePageNumber}?query=${query}`)
+    payload: axiosWrapper().get(`/shomin/api/paige/promotions/${responsePageNumber}?query=${query}`)
       .then(xhr => {
+        //
         // i'm not sure these really need to be dispatched actions.
         // when the reducer could just respond to types.GET_PROMOS, extract the props we are interested in
         // and update the state accordingly..
@@ -94,7 +98,7 @@ export const newPromo    = createAction(types.NEW_PROMO)
 export const createPromo = function(attrs) {
   return {
     type: types.CREATE_PROMO,
-    payload: axios().post(`/shomin/api/paige/promotion`, attrs)
+    payload: axiosWrapper().post(`/shomin/api/paige/promotion`, attrs)
       .then(xhr => xhr.data)
       .catch(e => e)
   }
@@ -104,7 +108,7 @@ export const deletePromo   = function({id}) {
   return {
     type: types.DELETE_PROMO,
     meta: {id},   
-    payload: axios().delete(`/shomin/api/paige/promotion/${id}`)
+    payload: axiosWrapper().delete(`/shomin/api/paige/promotion/${id}`)
       .then(xhr => xhr.data)
       .catch(e => e)
   }
@@ -172,8 +176,64 @@ export const updatePromo   = function(attrs) {
 
   return {
     type: types.UPDATE_PROMO,
-    payload: axios().put(`/shomin/api/paige/promotion/${id}`, attrs)
+    payload: axiosWrapper().put(`/shomin/api/paige/promotion/${id}`, attrs)
       .then(xhr => xhr.data)
       .catch(e => e)
   }
+}
+
+export const copyPromoToContentBlock = function({id}) {
+  return (dispatch, getState) => {
+    const {selected} = getState().promos
+    if(!selected) throw new Error(`can't call copyPromoToContentBlock without first selecting a promo`)
+    
+    // clone promo gives us what we need since it requires a content-block id as a param
+    return dispatch(clonePromo({
+      id: selected, 
+      contentBlockId: id
+    }))
+  }
+}
+
+
+export const highlightPromoAfterRedirect = function({id}) {
+  Cookies.set(types.HIGHLIGHT_PROMO_AFTER_REDIRECT_COOKIE_KEY, id)
+  return { type: types.HIGHLIGHT_PROMO_AFTER_REDIRECT }
+}
+
+export const checkValidUrl = (url, field) => {
+  return (dispatch, getState) => {
+    if(!window.p_img || !window.p_img[field]){
+      //console.log(`|promos| checkValidURL p_img[${field}] not found, creating now`)
+      window.p_img = window.p_img || {}
+      window.p_img[field] = document.createElement('img')
+    }
+    
+    // have to reset these handlers every time it seems
+    window.p_img[field].onload = function(){
+      // console.log(`|promos| checkValidURL p_img[${field}].onload() `)
+      dispatch({
+        type: `${types.CHECK_VALID_URL}_FULFILLED`,
+        payload: {field, status:200}
+      })
+    }
+    window.p_img[field].onerror = function(){
+      // console.log(`|promos| checkValidURL p_img[${field}].onerror()`)
+      dispatch({
+        type: `${types.CHECK_VALID_URL}_REJECTED`,
+        payload: {field, status: 404}
+      })
+    }
+
+    window.p_img[field].src = url;
+
+    dispatch({
+      type: `${types.CHECK_VALID_URL}_PENDING`,
+      payload: {field, status: 'PENDING'}
+    })
+  }
+}
+
+export const isExternalUrl = (url) => {
+  return !/^http(s*):\/\/((www|tools)\.)*sho\.com/.test(url)
 }

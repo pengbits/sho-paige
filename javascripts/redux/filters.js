@@ -31,16 +31,22 @@ export const filters = (state=initialState, action={}) => {
       return state.filter(f => f.type !== type)
       
     case SET_FILTERS:
-      const filters = action.payload
-      return filters.filter(f => ![undefined,''].includes(f.value))
-      // if we passed [{type:'title',value:''}], 
-      // it'll have the effect of removing the title filter
-
-      
+      return sanitizePayload(action.payload)
       
     default:
       return state
   }
 }
 
+// helpers
+// filters.sanitizePayload(array)
+// if we dispatched {type:'SET_FILTERS, payload:[{type:'title',value:''}]}, 
+// this'll have the effect of removing the title filter from state
+// this was already implemented inline in filters reducer above,
+// but exporting as helper function so we can apply the logic in other contexts, ie middleware
+export const sanitizePayload = (filters=[]) => {
+  return filters.filter(f => ![undefined,''].includes(f.value))
+}
+
 export default filters
+

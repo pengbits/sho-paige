@@ -13,8 +13,8 @@ Feature: Paginate Promos in Search Context
     Then promos for the range 10...19 will be visible
 
   Scenario: The number of pagination pages will be set based on the size of the response
-    Given the search response has a size property greater than 0
-      And there are promos in the PromoList
+    Given there are promos in the PromoList
+      And the search response has a size property greater than 0 
      Then a corresponding number of pagination pages (totalResponsePages) will be set
 
   Scenario: The paginatedList displays promos that correspond to the currentSelectedPage
@@ -42,7 +42,7 @@ Feature: Paginate Promos in Search Context
       When the currentSelectedPage is set to 2
        And I set the filter to 'text:bacon'
       Then only promos from the range 10...19 that have 'bacon' in the title will be visible
-      
+  
    Scenario: Pagination is not needed when there are less than ten results
      Given there are ten items or less in the PromoList
        And the currentSelectedPage is set
@@ -53,4 +53,4 @@ Feature: Paginate Promos in Search Context
       And the filter and currentSelectedPage are set
      When I change the currentSelectedPage
      Then the filtered paginated list is refreshed
-   
+  

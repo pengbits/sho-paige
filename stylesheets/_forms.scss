@@ -40,27 +40,34 @@
   font-size: 18px;  
 }
 
-// maybe a mix-in with a map would be better?
+$input-height : 32px;
 .promo-form__input {
-  &--window     { @extend .promo-list__item__column--window;    }    
-  &--position   { @extend .promo-list__item__column--position;  }
-  &--context    { @extend .promo-list__item__column--context;   }
-  &--name       { @extend .promo-list__item__column--name;      }
-  &--start-date { @extend .promo-list__item__column--start-date;}
-  &--end-date   { @extend .promo-list__item__column--end-date;  }
-  &--tools      { @extend .promo-list__item__column--tools;     }
+  &--window     { @include promo-list-column-width("window")        }    
+  &--position   { @include promo-list-column-width("position")      } 
+  &--display-context { @include promo-list-column-width("context")  }
+  &--name       { @include promo-list-column-width("name")          }       
+  &--start-date { @include promo-list-column-width("start-date")    }  
+  &--end-date   { @include promo-list-column-width("end-date")      }   
+  &--tools      { @include promo-list-column-width("tools")         } 
+  
   display: flex;
   align-items: center;
+  
+  &--display-context {
+    padding-left: 0 !important;
+  }
+  
+  
   label {
     padding: $sizes-m 0px;
     width: 150px;
-    line-height: 32px;
+    line-height: $input-height;
     text-align: right;
     margin-right: $sizes-xl + $sizes-s;
   }
   
   input {
-    line-height: 32px;
+    line-height: $input-height;
     text-indent: $sizes-m;
   } 
 
@@ -91,6 +98,9 @@
       height: 300px;
      }
   }
+  
+  
+  
   .promo-form-group--inline & {
     @extend .promo-list__item__column;
     display: inline-block;
@@ -99,7 +109,7 @@
     
     input { 
       width: auto;
-      height: 32px;
+      height: $input-height;
       border-radius: 4px;
     }
     
@@ -181,6 +191,126 @@
 
 .promo-form__input--text-area label {
   vertical-align: top
+}
+
+// icons for image-path
+// [()-] [.] [√]
+// <div class='promo-form__image-actions'>
+//  <div class="image-hunter image-action">
+//    <span class="image-hunter__icon image-action__icon fa fa-search">&nbsp;</span>
+//  </div>
+//  <div class="image-preview image-action">
+//    <span class="image-preview__icon image-action__icon fa fa-eye image-preview--invalid">&nbsp;</span>
+//  </div>
+//  <div class="image-validator image-attr image-validator--success">
+//    <span class="image-validator__status image-attr__icon">√</span>
+//  </div>
+// </div>
+
+$image-action-width:  ($sizes-xl + $sizes-l);
+$image-action-margin: $sizes-m;
+.promo-form__input--image-path {
+  display: flex;
+  flex-wrap: wrap;
+  
+  input { 
+    width:500px - (($image-action-width + $image-action-margin) * 3);  
+  }
+  
+  
+  .image-action,
+  .image-attr {  
+    display: inline-block;
+    width: $image-action-width;
+    line-height: $input-height;
+    text-align: center;
+  }
+  
+  .image-action {
+    margin-left: $image-action-margin;
+    cursor:pointer;
+    border: $colors-form-input-border solid 1px;
+    border-radius: $sizes-s;
+
+    &:hover {
+      background-color: $colors-form-input-border;
+    }
+  }
+
+  .image-preview  {
+    position: relative;
+    margin-left: $sizes-m;
+
+    &__icon {
+      position: relative;
+    }
+    
+    &__img {
+      display: none;
+      position: absolute;
+      z-index: 1000;
+      padding: $sizes-m;
+      border: $colors-form-input-border solid 1px;
+      border-radius: $sizes-s;
+      background-color: $colors-pure-white;
+      max-width: 200px;
+    }
+    
+    &--invalid {
+      cursor: auto;
+      opacity: 0.5
+    }
+  }
+  
+  .image-action:hover.image-preview--invalid {
+    background: 0;
+  }
+}
+
+.image-validator {
+  &--success {
+    color: #4cae4c;
+  }
+  &--failure {
+    color: #d9534f;
+  }
+  &--bypassed {
+    position: relative;
+    @extend .image-action
+  }
+}
+
+.image-validator__tooltip {
+  display: none;
+  position: absolute;
+  // todo -add media query to stack at small widths
+  top: -7px;
+  left: 40px;
+  width: 400px;
+  background-color: $colors-pure-white;
+  border: $colors-table-row-grey solid 1px;
+  line-height: 1.5em;
+  z-index: 99999;
+  
+  .image-validator:hover & {
+    display: block;
+  }
+}
+
+// wrap image actions onto new-line as needed
+@media(max-width: 899px){
+  .promo-form__input--image-path input{
+    width: 500px;
+  }
+  .promo-form__image-actions {
+    display: block;
+    margin-left: 165px;
+  }
+}
+
+
+.image-preview:hover .image-preview__img {
+  display: block;
 }
 
 .promo-form__error-message {

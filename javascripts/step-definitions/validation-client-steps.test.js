@@ -11,7 +11,7 @@ import contentBlockMock from '../mocks/getContentBlock'
 import reducer from '../redux/promos'
 
 // validation rules, which'll be applied to form
-import FormConfig from '../components/PromoFormConfig'
+import FormConfigs from '../components/form-configs'
 import {getRules, getValidator} from '../utils/validation'
 
 // models
@@ -28,7 +28,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/validation-client.feature'), t
   let validator
   
   const given_there_are_validation_rules = (strategy) => {
-    validator = getValidator(['default',{'config':FormConfig}])
+    validator = getValidator(['default',{'config':FormConfigs.default}])
     expect(typeof validator).toBe('function')
   };
   
@@ -141,7 +141,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/validation-client.feature'), t
     given('there are validation rules', given_there_are_validation_rules)
 
     when('I enter an excessively long string for smallImageUrl', () => {
-      let blah = '',i; for(i=0;i<151;i++){ blah += 'x' }
+      let blah = 'https://',i; for(i=0;i<151;i++){ blah += 'x' }
       attrs = {
         'title' :'A Mischievous Promo',
         'name'  :'A Mischievous Promo',
@@ -150,7 +150,7 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/validation-client.feature'), t
       }
     })
     then('there will be some errors', () => {
-      const errors  = validator(attrs)  
+      const errors  = validator(attrs) 
       expect(errors.smallImageUrl).toContain('smallImageUrl can\'t be longer than 150')
     })
   })
@@ -253,6 +253,27 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/validation-client.feature'), t
     });
   })
   
+  const when_i_enter_an_image_path_such_as = (path) => {
+    attrs = {'largeImageUrl':path}
+  }
+  
+  const expect_large_image_url_must_begin_with_https_error = () => {
+    const errors  = validator(attrs)    
+    expect(errors.largeImageUrl).toEqual('Large Image Url must begin with https://')
+  }
+  
+  test('Image paths must use secure protocol', ({ given, when, then }) => {
+    given('there are validation rules', given_there_are_validation_rules)
+     when(/^I enter an image path such as "(.+)"/, when_i_enter_an_image_path_such_as)
+     then('there will be some errors', expect_large_image_url_must_begin_with_https_error)
+  })
+    
+  test('Image paths must not have extra invalid chars after protocol', ({ given, when, then }) => {
+    given('there are validation rules', given_there_are_validation_rules)
+     when(/^I enter an image path such as "(.+)"/, when_i_enter_an_image_path_such_as)
+     then('there will be some errors', expect_large_image_url_must_begin_with_https_error)
+  })
+    
 })
 
 

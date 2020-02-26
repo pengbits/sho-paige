@@ -18,6 +18,8 @@ import FormHooksMiddleware from './middleware/form-hooks-middleware'
 import FilterPromosMiddleware from './middleware/filter-promos-middleware'
 import SortMiddleware from './middleware/sort-middleware'
 import PaginationMiddleware from './middleware/pagination-middleware'
+import CopyToContentBlockMiddleware from './middleware/copy-to-content-block-middleware'
+import HunterAdapterMiddleware from './middleware/hunter-adapter-middleware';
 import App from './containers/AppContainer'
 
 // init dev tools & store
@@ -35,6 +37,8 @@ const initStore = (initialState={}) => {
         FilterPromosMiddleware,
         SortMiddleware,      
         PaginationMiddleware,
+        CopyToContentBlockMiddleware,
+        HunterAdapterMiddleware,
         promiseMiddleware(),
         thunk.withExtraArgument({'isRootReducer': true})
       )

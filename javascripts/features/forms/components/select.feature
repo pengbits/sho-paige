@@ -14,7 +14,7 @@ Scenario: Render CtaType as Select
   """
   <div className="promo-form__input promo-form__input--select promo-form__input--text promo-form__input--cta-type">
     <label htmlFor="ctaType">
-      ctaType
+      cta type
     </label>
     <Field
       component="select"

@@ -19,7 +19,6 @@ export const applyTemplateToField = (template, key, field) => {
 }
 
 // selectors
-export const getKeyFromContentBlock = (({name}) => (name || '').toLowerCase())
 export const getValues    = ((state,key) => state[key] ? state[key].values : {})
 export const getTemplates = ((state,key) => state[key] ? state[key].templates : {})
 

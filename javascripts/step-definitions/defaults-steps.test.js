@@ -19,7 +19,7 @@ import rootReducer from '../redux'
 
 
 // validation rules, which'll be applied to form
-import FormConfig from '../components/PromoFormConfig'
+import {default as FormConfig} from '../components/form-configs'
 import {getRules, getValidator} from '../utils/validation'
 
 // models
@@ -83,7 +83,6 @@ defineFeature(loadFeature(PAIGE_ROOT + '/features/defaults.feature'), test => {
       const randomDate = Math.floor(Math.random() * 28) + 1 
       const selectedPickerDefaultDatetime = afterState.datetimes[selectedPicker].defaultDateTime
       const selectDate = selectedPickerDefaultDatetime.date(randomDate)
-
       //user selects a date but doesn't select time and triggers a @@redux-form action 'CHANGE'
       store.dispatch(change('promo', selectedPicker, {payload:selectDate} ))
     });
