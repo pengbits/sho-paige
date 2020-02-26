@@ -1,2 +1,2 @@
 # sho-paige
-wip front-end for a cms built with react/redux and backed by REST apis
+the front-end client for a content management system built with React/Redux and backed by REST apis. Heavily informed by princibles of BDD, using Jest and Jest-Cucumber for testing and feature development.
